@@ -104,11 +104,13 @@
     <!-- Input Area -->
     <div id="input-area">
       <form id="answer-form" autocomplete="off" action="javascript:void(0);">
-        <input type="tel" id="answer-input"
-               placeholder="?" autocomplete="off" autocorrect="off"
-               autocapitalize="off" spellcheck="false"
+        <input type="text" inputmode="numeric" pattern="[0-9]*"
+               id="answer-input"
+               placeholder="?" autocomplete="one-time-code"
+               autocorrect="off" autocapitalize="off" spellcheck="false"
                data-form-type="other" data-lpignore="true"
-               name="kuku-answer" maxlength="3">
+               enterkeyhint="done"
+               name="kuku-answer-x" maxlength="3">
       </form>
       <button id="submit-btn" class="block-btn">OK</button>
       <button id="special-btn" class="block-btn special-btn" disabled>
