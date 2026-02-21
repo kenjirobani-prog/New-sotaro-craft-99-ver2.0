@@ -15,9 +15,9 @@
   --bg-bottom: #4a8c3f;
   --block-border: #333;
   --block-shadow: rgba(0,0,0,0.35);
-  --player-color: #3b82f6;
-  --player-skin: #d4a574;
-  --player-hair: #5c3317;
+  --player-color: #1a0835;
+  --player-skin: #c9a065;
+  --player-hair: #3d2008;
   --hp-player: #ef4444;
   --hp-enemy: #f97316;
   --special-glow: #fbbf24;
@@ -80,24 +80,44 @@ body::after {
   gap: 2rem;
 }
 .title-block {
-  background: rgba(0,0,0,0.65);
-  border: 4px solid #555;
-  padding: 1.5rem 2rem;
+  background: transparent;
+  border: none;
+  padding: 1rem 1rem;
   text-align: center;
-  box-shadow: 6px 6px 0 var(--block-shadow);
+  box-shadow: none;
 }
 .game-title {
-  font-size: 2.6rem;
-  color: #fbbf24;
-  text-shadow: 3px 3px 0 #333, -1px -1px 0 #333;
-  letter-spacing: 0.1em;
-  line-height: 1.2;
+  font-size: 3rem;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  /* Stone texture fill */
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #9a9a9a 0px, #b0b0b0 3px, #858585 5px, #a5a5a5 8px, #8a8a8a 11px, #999 14px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      #929292 0px, #aaa 4px, #808080 7px, #989898 10px
+    );
+  background-blend-mode: overlay;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-stroke: 2.5px #1a1a1a;
+  paint-order: stroke fill;
+  /* 3D depth + outline shadow */
+  filter:
+    drop-shadow(2px 2px 0 #4a4a4a)
+    drop-shadow(2px 2px 0 #333)
+    drop-shadow(3px 3px 0 #222);
 }
 .subtitle {
-  color: #ccc;
-  font-size: 1rem;
-  margin-top: 0.3rem;
+  color: #fbbf24;
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
   letter-spacing: 0.2em;
+  text-shadow: 2px 2px 0 #333, -1px -1px 0 #333;
 }
 
 /* --- Block Buttons --- */
@@ -145,10 +165,11 @@ body::after {
   border-bottom: 3px solid #555;
 }
 .title-text {
-  color: #fbbf24;
+  color: #b0b0b0;
   font-size: 0.9rem;
-  text-shadow: 1px 1px 0 #000;
+  text-shadow: 1px 1px 0 #000, -1px -1px 0 #1a1a1a;
   letter-spacing: 0.08em;
+  -webkit-text-stroke: 0.5px #222;
 }
 .sound-controls {
   display: flex;
@@ -247,40 +268,41 @@ body::after {
   width: 32px;
   height: 32px;
   background: var(--player-skin);
-  border: 2px solid #8B6914;
+  border: 2px solid #a07830;
   position: relative;
   box-shadow: 3px 3px 0 var(--block-shadow);
 }
 .mc-head::before {
   content: '';
   position: absolute;
-  top: -4px;
+  top: -5px;
   left: -2px;
   right: -2px;
-  height: 9px;
+  height: 10px;
   background: var(--player-hair);
-  border: 2px solid #3a1a08;
+  border: 2px solid #2a1505;
 }
 .mc-eye {
   position: absolute;
   width: 5px;
   height: 5px;
-  background: #333;
+  background: #22d3ee;
   top: 12px;
+  box-shadow: inset 1px 1px 0 rgba(0,0,0,0.3);
 }
 .mc-eye.left-eye  { left: 5px; }
 .mc-eye.right-eye { right: 5px; }
 .mc-mouth {
   position: absolute;
   width: 7px;
-  height: 3px;
-  background: #8B4513;
-  bottom: 4px;
+  height: 2px;
+  background: #8B6530;
+  bottom: 5px;
   left: 50%;
   transform: translateX(-50%);
 }
 
-/* Player - Body */
+/* Player - Body (dark purple robe) */
 .mc-body {
   display: flex;
   align-items: flex-start;
@@ -289,21 +311,22 @@ body::after {
 .mc-torso {
   width: 24px;
   height: 24px;
-  background: var(--player-color);
-  border: 2px solid #1e40af;
+  background: linear-gradient(90deg, var(--player-color) 30%, #2e1260 46%, #2e1260 54%, var(--player-color) 70%);
+  border: 2px solid #0d0520;
   box-shadow: 2px 2px 0 var(--block-shadow);
+  position: relative;
 }
 .mc-arm {
   width: 10px;
   height: 26px;
-  background: var(--player-skin);
-  border: 2px solid #8B6914;
+  background: linear-gradient(to bottom, var(--player-color) 62%, var(--player-skin) 62%);
+  border: 2px solid #0d0520;
   box-shadow: 2px 2px 0 var(--block-shadow);
   transition: transform 0.15s ease;
   transform-origin: top center;
 }
 
-/* Player - Legs */
+/* Player - Legs (dark robe lower) */
 .mc-legs {
   display: flex;
   gap: 2px;
@@ -312,8 +335,8 @@ body::after {
 .mc-leg {
   width: 10px;
   height: 16px;
-  background: #4a5568;
-  border: 2px solid #2d3748;
+  background: linear-gradient(to bottom, #130628 60%, #2a1505 60%);
+  border: 2px solid #0a0318;
   box-shadow: 2px 2px 0 var(--block-shadow);
 }
 
@@ -533,7 +556,7 @@ body::after {
 }
 
 /* --- Attack Animation --- */
-.player-character.attacking .right-arm {
+.player-character.attacking .mc-arm.right-arm {
   transform: rotate(-70deg) translateX(10px);
 }
 .player-character.hit {
