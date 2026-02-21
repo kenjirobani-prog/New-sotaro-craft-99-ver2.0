@@ -57,6 +57,7 @@ const dom = {
   submitBtn:     $('submit-btn'),
   specialBtn:    $('special-btn'),
   resultStats:   $('result-stats'),
+  correctOverlay:$('correct-answer-overlay'),
 };
 
 // ===== Enemy Mob Types =====
@@ -417,9 +418,25 @@ function handleWrong() {
   dom.comboNum.textContent = 0;
 
   if (state.playerHP <= 0) { handleGameOver(); return; }
-  generateProblem();
-  startTimer();
-  focusInput();
+
+  // Show correct answer overlay for 2 seconds, then advance
+  var p = state.currentProblem;
+  showCorrectAnswer(p.a + ' \u00D7 ' + p.b + ' = ' + p.answer);
+  dom.answerInput.disabled = true;
+  setTimeout(function() {
+    dom.answerInput.disabled = false;
+    generateProblem();
+    startTimer();
+    focusInput();
+  }, 2000);
+}
+
+function showCorrectAnswer(text) {
+  dom.correctOverlay.textContent = '\u6B63\u89E3: ' + text;
+  dom.correctOverlay.className = 'correct-answer-overlay show';
+  setTimeout(function() {
+    dom.correctOverlay.className = 'correct-answer-overlay';
+  }, 2000);
 }
 
 function handleEnemyDefeated() {
