@@ -128,7 +128,8 @@ body::after {
 
 /* --- Game Screen Layout --- */
 #game-screen {
-  min-height: 100svh;
+  min-height: 0;
+  height: auto;
   justify-content: flex-start;
   padding: 0;
   gap: 0;
@@ -140,7 +141,7 @@ body::after {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.3rem 0.6rem;
+  padding: 0.2rem 0.6rem;
   background: rgba(0,0,0,0.7);
   border-bottom: 3px solid #555;
   flex-shrink: 0;
@@ -195,21 +196,20 @@ body::after {
 /* --- Battle Area --- */
 #battle-area {
   width: 100%;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-around;
-  padding: 0.5rem;
+  padding: 0.3rem 0.5rem;
   position: relative;
   min-height: 0;
-  max-height: 40svh;
 }
 
 .fighter-col {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.2rem;
+  gap: 0.1rem;
   flex: 0 0 42%;
 }
 
@@ -323,38 +323,22 @@ body::after {
   box-shadow: 2px 2px 0 var(--block-shadow);
 }
 
-/* --- Enemy Character (Zombie/Slime) --- */
+/* --- Enemy Characters (multiple types) --- */
+/* Common enemy parts */
 .enemy-head {
-  width: 32px;
-  height: 32px;
-  background: var(--enemy-color);
-  border: 2px solid var(--enemy-dark);
   position: relative;
   box-shadow: 3px 3px 0 var(--block-shadow);
 }
 .enemy-eye {
   position: absolute;
-  width: 6px;
-  height: 6px;
   background: #000;
-  top: 10px;
 }
-.enemy-eye.left-eye  { left: 5px; }
-.enemy-eye.right-eye { right: 5px; }
 .enemy-mouth {
   position: absolute;
-  width: 14px;
-  height: 4px;
-  background: #14532d;
-  bottom: 4px;
   left: 50%;
   transform: translateX(-50%);
 }
 .enemy-body {
-  width: 30px;
-  height: 24px;
-  background: var(--enemy-color);
-  border: 2px solid var(--enemy-dark);
   margin-top: -1px;
   box-shadow: 2px 2px 0 var(--block-shadow);
 }
@@ -364,11 +348,189 @@ body::after {
   margin-top: -1px;
 }
 .enemy-leg {
-  width: 12px;
-  height: 16px;
-  background: var(--enemy-color);
-  border: 2px solid var(--enemy-dark);
   box-shadow: 2px 2px 0 var(--block-shadow);
+}
+/* Slime arms (for types that have them) */
+.enemy-arms {
+  display: flex;
+  align-items: flex-start;
+  margin-top: -1px;
+}
+.enemy-arm {
+  box-shadow: 2px 2px 0 var(--block-shadow);
+}
+.enemy-torso {
+  box-shadow: 2px 2px 0 var(--block-shadow);
+}
+/* Horn */
+.enemy-horn {
+  position: absolute;
+  box-shadow: 1px 1px 0 var(--block-shadow);
+}
+
+/* --- Type: Slime (stage 1-2) --- */
+.mob-slime .enemy-head {
+  width: 36px; height: 28px;
+  border: 2px solid #166534; background: #22c55e;
+  border-radius: 6px 6px 0 0;
+}
+.mob-slime .enemy-eye { width: 6px; height: 6px; top: 8px; }
+.mob-slime .enemy-eye.left-eye { left: 6px; }
+.mob-slime .enemy-eye.right-eye { right: 6px; }
+.mob-slime .enemy-mouth { width: 10px; height: 3px; background: #14532d; bottom: 4px; }
+.mob-slime .enemy-body {
+  width: 36px; height: 14px;
+  border: 2px solid #166534; background: #22c55e;
+  border-radius: 0 0 4px 4px;
+}
+
+/* --- Type: Zombie (stage 3-5) --- */
+.mob-zombie .enemy-head {
+  width: 32px; height: 32px;
+  border: 2px solid #365314; background: #65a30d;
+}
+.mob-zombie .enemy-eye { width: 6px; height: 6px; top: 10px; }
+.mob-zombie .enemy-eye.left-eye { left: 5px; }
+.mob-zombie .enemy-eye.right-eye { right: 5px; background: #dc2626; }
+.mob-zombie .enemy-mouth { width: 14px; height: 4px; background: #3f6212; bottom: 4px; }
+.mob-zombie .enemy-torso {
+  width: 26px; height: 22px;
+  border: 2px solid #365314; background: #84cc16;
+}
+.mob-zombie .enemy-arm {
+  width: 10px; height: 24px;
+  border: 2px solid #365314; background: #65a30d;
+}
+.mob-zombie .enemy-leg {
+  width: 11px; height: 16px;
+  border: 2px solid #1a2e05; background: #4a5568;
+}
+
+/* --- Type: Skeleton (stage 6-9) --- */
+.mob-skeleton .enemy-head {
+  width: 30px; height: 30px;
+  border: 2px solid #a8a29e; background: #e7e5e4;
+}
+.mob-skeleton .enemy-eye { width: 7px; height: 7px; top: 8px; background: #1c1917; }
+.mob-skeleton .enemy-eye.left-eye { left: 4px; }
+.mob-skeleton .enemy-eye.right-eye { right: 4px; }
+.mob-skeleton .enemy-mouth { width: 12px; height: 3px; background: #1c1917; bottom: 5px; }
+.mob-skeleton .enemy-torso {
+  width: 20px; height: 22px;
+  border: 2px solid #a8a29e; background: #d6d3d1;
+}
+.mob-skeleton .enemy-arm {
+  width: 8px; height: 26px;
+  border: 2px solid #a8a29e; background: #e7e5e4;
+}
+.mob-skeleton .enemy-leg {
+  width: 9px; height: 18px;
+  border: 2px solid #a8a29e; background: #d6d3d1;
+}
+
+/* --- Type: Spider (stage 10-14) --- */
+.mob-spider .enemy-head {
+  width: 28px; height: 22px;
+  border: 2px solid #451a03; background: #78350f;
+}
+.mob-spider .enemy-eye { width: 5px; height: 5px; top: 5px; background: #dc2626; }
+.mob-spider .enemy-eye.left-eye { left: 4px; }
+.mob-spider .enemy-eye.right-eye { right: 4px; }
+.mob-spider .enemy-body {
+  width: 36px; height: 20px;
+  border: 2px solid #451a03; background: #92400e;
+  border-radius: 4px;
+}
+.mob-spider .enemy-legs { gap: 1px; }
+.mob-spider .enemy-leg {
+  width: 6px; height: 14px;
+  border: 2px solid #451a03; background: #78350f;
+}
+
+/* --- Type: Creeper (stage 15-19) --- */
+.mob-creeper .enemy-head {
+  width: 32px; height: 32px;
+  border: 2px solid #166534; background: #4ade80;
+}
+.mob-creeper .enemy-eye { width: 5px; height: 7px; top: 8px; background: #14532d; }
+.mob-creeper .enemy-eye.left-eye { left: 6px; }
+.mob-creeper .enemy-eye.right-eye { right: 6px; }
+.mob-creeper .enemy-mouth {
+  width: 6px; height: 8px; background: #14532d; bottom: 4px;
+  box-shadow: -4px 0 0 #14532d, 4px 0 0 #14532d;
+}
+.mob-creeper .enemy-body {
+  width: 24px; height: 26px;
+  border: 2px solid #166534; background: #4ade80;
+}
+.mob-creeper .enemy-leg {
+  width: 10px; height: 12px;
+  border: 2px solid #166534; background: #4ade80;
+}
+
+/* --- Type: Enderman (stage 20-24) --- */
+.mob-enderman .enemy-head {
+  width: 32px; height: 28px;
+  border: 2px solid #1e1b4b; background: #312e81;
+}
+.mob-enderman .enemy-eye { width: 10px; height: 4px; top: 10px; background: #c084fc; }
+.mob-enderman .enemy-eye.left-eye { left: 2px; }
+.mob-enderman .enemy-eye.right-eye { right: 2px; }
+.mob-enderman .enemy-torso {
+  width: 18px; height: 28px;
+  border: 2px solid #1e1b4b; background: #312e81;
+}
+.mob-enderman .enemy-arm {
+  width: 7px; height: 32px;
+  border: 2px solid #1e1b4b; background: #312e81;
+}
+.mob-enderman .enemy-leg {
+  width: 8px; height: 24px;
+  border: 2px solid #1e1b4b; background: #312e81;
+}
+
+/* --- Type: Blaze (stage 25-29) --- */
+.mob-blaze .enemy-head {
+  width: 30px; height: 30px;
+  border: 2px solid #92400e; background: #f59e0b;
+  box-shadow: 3px 3px 0 var(--block-shadow), 0 0 8px rgba(245,158,11,0.6);
+}
+.mob-blaze .enemy-eye { width: 6px; height: 6px; top: 9px; background: #7c2d12; }
+.mob-blaze .enemy-eye.left-eye { left: 5px; }
+.mob-blaze .enemy-eye.right-eye { right: 5px; }
+.mob-blaze .enemy-mouth { width: 10px; height: 3px; background: #7c2d12; bottom: 5px; }
+.mob-blaze .enemy-body {
+  width: 26px; height: 18px;
+  border: 2px solid #92400e; background: #fbbf24;
+  box-shadow: 2px 2px 0 var(--block-shadow), 0 0 6px rgba(251,191,36,0.5);
+}
+.mob-blaze .enemy-leg {
+  width: 8px; height: 12px;
+  border: 2px solid #92400e; background: #f59e0b;
+}
+
+/* --- Type: Wither (stage 30+, boss) --- */
+.mob-wither .enemy-head {
+  width: 36px; height: 36px;
+  border: 2px solid #1c1917; background: #44403c;
+}
+.mob-wither .enemy-eye { width: 8px; height: 4px; top: 12px; background: #fafaf9; }
+.mob-wither .enemy-eye.left-eye { left: 5px; }
+.mob-wither .enemy-eye.right-eye { right: 5px; }
+.mob-wither .enemy-mouth { width: 12px; height: 4px; background: #1c1917; bottom: 6px; }
+.mob-wither .enemy-horn {
+  top: -8px; left: 50%; transform: translateX(-50%);
+  width: 10px; height: 10px;
+  border: 2px solid #1c1917; background: #57534e;
+}
+.mob-wither .enemy-body {
+  width: 34px; height: 26px;
+  border: 2px solid #1c1917; background: #57534e;
+  box-shadow: 2px 2px 0 var(--block-shadow), 0 0 10px rgba(0,0,0,0.5);
+}
+.mob-wither .enemy-leg {
+  width: 14px; height: 14px;
+  border: 2px solid #1c1917; background: #44403c;
 }
 
 /* --- Attack Animation --- */
@@ -460,7 +622,7 @@ body::after {
   width: 100%;
   display: flex;
   justify-content: space-around;
-  padding: 0.3rem 0.5rem;
+  padding: 0.15rem 0.5rem;
   background: rgba(0,0,0,0.6);
   border-top: 2px solid #555;
   border-bottom: 2px solid #555;
@@ -510,7 +672,7 @@ body::after {
 /* --- Question Area --- */
 #question-area {
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.3rem;
   text-align: center;
   flex-shrink: 0;
 }
@@ -527,11 +689,11 @@ body::after {
 /* --- Input Area --- */
 #input-area {
   width: 100%;
-  padding: 0.4rem 0.8rem 0.6rem;
+  padding: 0.3rem 0.8rem 0.4rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   flex-shrink: 0;
   background: rgba(0,0,0,0.4);
   border-top: 2px solid #555;

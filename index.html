@@ -65,16 +65,7 @@
         </div>
         <span id="enemy-hp-text" class="hp-text">60/60</span>
         <div id="enemy-char" class="character enemy-character">
-          <div class="enemy-head">
-            <div class="enemy-eye left-eye"></div>
-            <div class="enemy-eye right-eye"></div>
-            <div class="enemy-mouth"></div>
-          </div>
-          <div class="enemy-body"></div>
-          <div class="enemy-legs">
-            <div class="enemy-leg left-leg"></div>
-            <div class="enemy-leg right-leg"></div>
-          </div>
+          <!-- Enemy is rendered dynamically by JS -->
         </div>
         <span class="fighter-label" id="enemy-label">ENEMY 1</span>
       </div>
@@ -113,7 +104,9 @@
     <!-- Input Area -->
     <div id="input-area">
       <input type="text" id="answer-input" inputmode="numeric" pattern="[0-9]*"
-             placeholder="?" autocomplete="off" maxlength="3">
+             placeholder="?" autocomplete="off" autocorrect="off" autocapitalize="off"
+             spellcheck="false" data-form-type="other" data-lpignore="true"
+             name="kuku-answer" maxlength="3">
       <button id="submit-btn" class="block-btn">OK</button>
       <button id="special-btn" class="block-btn special-btn" disabled>
         SPECIAL (SPACE)

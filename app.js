@@ -58,6 +58,68 @@ const dom = {
   resultStats:   $('result-stats'),
 };
 
+// ===== Enemy Mob Types =====
+// Each mob has a stage range, name, CSS class, and HTML structure
+const MOB_TYPES = [
+  {
+    minStage: 1, maxStage: 2,
+    name: 'SLIME', cssClass: 'mob-slime',
+    html: `<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div>`
+  },
+  {
+    minStage: 3, maxStage: 5,
+    name: 'ZOMBIE', cssClass: 'mob-zombie',
+    html: `<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-arms"><div class="enemy-arm"></div><div class="enemy-torso"></div><div class="enemy-arm"></div></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>`
+  },
+  {
+    minStage: 6, maxStage: 9,
+    name: 'SKELETON', cssClass: 'mob-skeleton',
+    html: `<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-arms"><div class="enemy-arm"></div><div class="enemy-torso"></div><div class="enemy-arm"></div></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>`
+  },
+  {
+    minStage: 10, maxStage: 14,
+    name: 'SPIDER', cssClass: 'mob-spider',
+    html: `<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div><div class="enemy-leg"></div><div class="enemy-leg"></div></div>`
+  },
+  {
+    minStage: 15, maxStage: 19,
+    name: 'CREEPER', cssClass: 'mob-creeper',
+    html: `<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>`
+  },
+  {
+    minStage: 20, maxStage: 24,
+    name: 'ENDERMAN', cssClass: 'mob-enderman',
+    html: `<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div></div><div class="enemy-arms"><div class="enemy-arm"></div><div class="enemy-torso"></div><div class="enemy-arm"></div></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>`
+  },
+  {
+    minStage: 25, maxStage: 29,
+    name: 'BLAZE', cssClass: 'mob-blaze',
+    html: `<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div><div class="enemy-leg"></div></div>`
+  },
+  {
+    minStage: 30, maxStage: 999,
+    name: 'WITHER', cssClass: 'mob-wither',
+    html: `<div class="enemy-head"><div class="enemy-horn"></div><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>`
+  },
+];
+
+function getMobForStage(stage) {
+  for (let i = MOB_TYPES.length - 1; i >= 0; i--) {
+    if (stage >= MOB_TYPES[i].minStage) return MOB_TYPES[i];
+  }
+  return MOB_TYPES[0];
+}
+
+function renderEnemy(stage) {
+  const mob = getMobForStage(stage);
+  const el = dom.enemyChar;
+  // Remove old mob class
+  MOB_TYPES.forEach(m => el.classList.remove(m.cssClass));
+  el.classList.add(mob.cssClass);
+  el.innerHTML = mob.html;
+  dom.enemyLabel.textContent = mob.name + ' Lv.' + stage;
+}
+
 // ===== Audio Engine (Web Audio API) =====
 let audioCtx = null;
 let bgmInterval = null;
@@ -491,26 +553,7 @@ function updateSpecialUI() {
 // ===== UI Updates =====
 function updateStageUI() {
   dom.stageNum.textContent = state.stage;
-  dom.enemyLabel.textContent = 'ENEMY ' + state.stage;
-  // Change enemy color based on stage
-  const hue = (state.stage * 37) % 360;
-  const enemyHead = dom.enemyChar.querySelector('.enemy-head');
-  const enemyBody = dom.enemyChar.querySelector('.enemy-body');
-  const enemyLegs = dom.enemyChar.querySelectorAll('.enemy-leg');
-  const color = `hsl(${hue}, 60%, 45%)`;
-  const dark = `hsl(${hue}, 60%, 25%)`;
-  if (enemyHead) {
-    enemyHead.style.background = color;
-    enemyHead.style.borderColor = dark;
-  }
-  if (enemyBody) {
-    enemyBody.style.background = color;
-    enemyBody.style.borderColor = dark;
-  }
-  enemyLegs.forEach(l => {
-    l.style.background = color;
-    l.style.borderColor = dark;
-  });
+  renderEnemy(state.stage);
 }
 
 function showScreen(name) {
@@ -557,22 +600,6 @@ function startGame() {
   updateStageUI();
   updateSpecialUI();
   dom.comboNum.textContent = 0;
-  // Reset enemy appearance
-  const enemyHead = dom.enemyChar.querySelector('.enemy-head');
-  const enemyBody = dom.enemyChar.querySelector('.enemy-body');
-  const enemyLegs = dom.enemyChar.querySelectorAll('.enemy-leg');
-  if (enemyHead) {
-    enemyHead.style.background = '';
-    enemyHead.style.borderColor = '';
-  }
-  if (enemyBody) {
-    enemyBody.style.background = '';
-    enemyBody.style.borderColor = '';
-  }
-  enemyLegs.forEach(l => {
-    l.style.background = '';
-    l.style.borderColor = '';
-  });
   dom.enemyChar.classList.remove('dying');
 
   showScreen('game');
