@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sotaro craft 99</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ===== Start Screen ===== -->
+  <div id="start-screen" class="screen">
+    <div class="title-block">
+      <h1 class="game-title">Sotaro<br>craft 99</h1>
+      <p class="subtitle">- kuku battle -</p>
+    </div>
+    <button id="start-btn" class="block-btn big-btn">START</button>
+  </div>
+
+  <!-- ===== Game Screen ===== -->
+  <div id="game-screen" class="screen hidden">
+    <!-- Title Bar -->
+    <div id="title-bar">
+      <span class="title-text">Sotaro craft 99</span>
+      <div class="sound-controls">
+        <button id="bgm-toggle" class="icon-btn" title="BGM ON/OFF">&#9835;</button>
+        <input type="range" id="volume-slider" min="0" max="100" value="50" title="Volume">
+      </div>
+    </div>
+
+    <!-- Battle Area -->
+    <div id="battle-area">
+      <!-- Player Side -->
+      <div class="fighter-col">
+        <div class="hp-bar-container">
+          <div id="player-hp-bar" class="hp-bar player-bar"></div>
+        </div>
+        <span id="player-hp-text" class="hp-text">100/100</span>
+        <div id="player-char" class="character player-character">
+          <div class="mc-head">
+            <div class="mc-eye left-eye"></div>
+            <div class="mc-eye right-eye"></div>
+            <div class="mc-mouth"></div>
+          </div>
+          <div class="mc-body">
+            <div class="mc-arm left-arm"></div>
+            <div class="mc-torso"></div>
+            <div class="mc-arm right-arm"></div>
+          </div>
+          <div class="mc-legs">
+            <div class="mc-leg left-leg"></div>
+            <div class="mc-leg right-leg"></div>
+          </div>
+        </div>
+        <span class="fighter-label">SOTARO</span>
+      </div>
+
+      <!-- Effect Text -->
+      <div id="effect-text" class="effect-text"></div>
+      <div id="damage-number" class="damage-number"></div>
+
+      <!-- Enemy Side -->
+      <div class="fighter-col">
+        <div class="hp-bar-container">
+          <div id="enemy-hp-bar" class="hp-bar enemy-bar"></div>
+        </div>
+        <span id="enemy-hp-text" class="hp-text">60/60</span>
+        <div id="enemy-char" class="character enemy-character">
+          <div class="enemy-head">
+            <div class="enemy-eye left-eye"></div>
+            <div class="enemy-eye right-eye"></div>
+            <div class="enemy-mouth"></div>
+          </div>
+          <div class="enemy-body"></div>
+          <div class="enemy-legs">
+            <div class="enemy-leg left-leg"></div>
+            <div class="enemy-leg right-leg"></div>
+          </div>
+        </div>
+        <span class="fighter-label" id="enemy-label">ENEMY 1</span>
+      </div>
+    </div>
+
+    <!-- Status Area -->
+    <div id="status-area">
+      <div class="status-item">
+        <span class="status-label">STAGE</span>
+        <span id="stage-num" class="status-value">1</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">COMBO</span>
+        <span id="combo-num" class="status-value">0</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">TIME</span>
+        <span id="time-num" class="status-value">15.0</span>
+      </div>
+      <div class="status-item special-status" id="special-status">
+        <span class="status-label">SPECIAL</span>
+        <span id="special-num" class="status-value">0/3</span>
+      </div>
+    </div>
+
+    <!-- Timer Bar -->
+    <div id="timer-bar-container">
+      <div id="timer-bar"></div>
+    </div>
+
+    <!-- Question Area -->
+    <div id="question-area">
+      <div id="question-text" class="question-text">3 &times; 7 = ?</div>
+    </div>
+
+    <!-- Input Area -->
+    <div id="input-area">
+      <div class="input-row">
+        <input type="text" id="answer-input" inputmode="numeric" pattern="[0-9]*"
+               placeholder="?" autocomplete="off" maxlength="3">
+        <button id="submit-btn" class="block-btn">OK</button>
+      </div>
+      <button id="special-btn" class="block-btn special-btn" disabled>
+        SPECIAL (SPACE)
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== Game Over Screen ===== -->
+  <div id="gameover-screen" class="screen hidden">
+    <div class="gameover-content">
+      <h2 class="gameover-title">GAME OVER</h2>
+      <div id="result-stats" class="result-stats"></div>
+      <button id="retry-btn" class="block-btn big-btn">RETRY</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
