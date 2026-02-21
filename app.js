@@ -8,14 +8,14 @@ const state = {
   stage: 1,
   playerHP: 100,
   playerMaxHP: 100,
-  enemyHP: 72,       // 60 + stage*12
+  enemyHP: 72,
   enemyMaxHP: 72,
   combo: 0,
   specialReady: false,
   timeLimit: 15,
   remainingTime: 15,
-  lastProblem: null,  // {a, b}
-  currentProblem: null, // {a, b, answer}
+  lastProblem: null,
+  currentProblem: null,
   isGameOver: false,
   isPaused: false,
   enemiesDefeated: 0,
@@ -53,68 +53,71 @@ const dom = {
   timerBar:      $('timer-bar'),
   questionText:  $('question-text'),
   answerInput:   $('answer-input'),
+  answerForm:    $('answer-form'),
   submitBtn:     $('submit-btn'),
   specialBtn:    $('special-btn'),
   resultStats:   $('result-stats'),
 };
 
 // ===== Enemy Mob Types =====
-// Each mob has a stage range, name, CSS class, and HTML structure
 const MOB_TYPES = [
   {
-    minStage: 1, maxStage: 2,
+    minStage: 1,
     name: 'SLIME', cssClass: 'mob-slime',
-    html: `<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div>`
+    html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div>'
   },
   {
-    minStage: 3, maxStage: 5,
+    minStage: 3,
     name: 'ZOMBIE', cssClass: 'mob-zombie',
-    html: `<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-arms"><div class="enemy-arm"></div><div class="enemy-torso"></div><div class="enemy-arm"></div></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>`
+    html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-arms"><div class="enemy-arm"></div><div class="enemy-torso"></div><div class="enemy-arm"></div></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
-    minStage: 6, maxStage: 9,
+    minStage: 6,
     name: 'SKELETON', cssClass: 'mob-skeleton',
-    html: `<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-arms"><div class="enemy-arm"></div><div class="enemy-torso"></div><div class="enemy-arm"></div></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>`
+    html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-arms"><div class="enemy-arm"></div><div class="enemy-torso"></div><div class="enemy-arm"></div></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
-    minStage: 10, maxStage: 14,
+    minStage: 10,
     name: 'SPIDER', cssClass: 'mob-spider',
-    html: `<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div><div class="enemy-leg"></div><div class="enemy-leg"></div></div>`
+    html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
-    minStage: 15, maxStage: 19,
+    minStage: 15,
     name: 'CREEPER', cssClass: 'mob-creeper',
-    html: `<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>`
+    html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
-    minStage: 20, maxStage: 24,
+    minStage: 20,
     name: 'ENDERMAN', cssClass: 'mob-enderman',
-    html: `<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div></div><div class="enemy-arms"><div class="enemy-arm"></div><div class="enemy-torso"></div><div class="enemy-arm"></div></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>`
+    html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div></div><div class="enemy-arms"><div class="enemy-arm"></div><div class="enemy-torso"></div><div class="enemy-arm"></div></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
-    minStage: 25, maxStage: 29,
+    minStage: 25,
     name: 'BLAZE', cssClass: 'mob-blaze',
-    html: `<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div><div class="enemy-leg"></div></div>`
+    html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
-    minStage: 30, maxStage: 999,
+    minStage: 30,
     name: 'WITHER', cssClass: 'mob-wither',
-    html: `<div class="enemy-head"><div class="enemy-horn"></div><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>`
+    html: '<div class="enemy-head"><div class="enemy-horn"></div><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
 ];
 
 function getMobForStage(stage) {
-  for (let i = MOB_TYPES.length - 1; i >= 0; i--) {
-    if (stage >= MOB_TYPES[i].minStage) return MOB_TYPES[i];
+  let mob = MOB_TYPES[0];
+  for (let i = 0; i < MOB_TYPES.length; i++) {
+    if (stage >= MOB_TYPES[i].minStage) mob = MOB_TYPES[i];
   }
-  return MOB_TYPES[0];
+  return mob;
 }
 
 function renderEnemy(stage) {
   const mob = getMobForStage(stage);
   const el = dom.enemyChar;
-  // Remove old mob class
-  MOB_TYPES.forEach(m => el.classList.remove(m.cssClass));
+  // Remove all mob classes
+  MOB_TYPES.forEach(function(m) { el.classList.remove(m.cssClass); });
+  // Add new mob class and set HTML
+  el.classList.remove('dying');
   el.classList.add(mob.cssClass);
   el.innerHTML = mob.html;
   dom.enemyLabel.textContent = mob.name + ' Lv.' + stage;
@@ -127,13 +130,16 @@ let masterGain = null;
 
 function initAudio() {
   if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) {
+      return; // AudioContext not supported
+    }
     masterGain = audioCtx.createGain();
     masterGain.gain.value = state.volume;
     masterGain.connect(audioCtx.destination);
   }
-  // iOS/Android: AudioContext starts in 'suspended' state
-  // Must call resume() inside a user gesture handler
+  // iOS/Android: AudioContext starts 'suspended' until user gesture
   if (audioCtx.state === 'suspended') {
     audioCtx.resume();
   }
@@ -144,22 +150,23 @@ function setVolume(v) {
   if (masterGain) masterGain.gain.value = v;
 }
 
-// Ensure audio is unlocked (call on any user interaction)
-function ensureAudioUnlocked() {
+function ensureAudioResumed() {
   if (audioCtx && audioCtx.state === 'suspended') {
     audioCtx.resume();
   }
 }
 
 // --- Synth helpers ---
-function playTone(freq, duration, type = 'square', vol = 0.3, delay = 0) {
+function playTone(freq, duration, type, vol, delay) {
   if (!audioCtx) return;
-  ensureAudioUnlocked();
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
+  ensureAudioResumed();
+  type = type || 'square';
+  vol = (vol !== undefined) ? vol : 0.3;
+  delay = delay || 0;
+  var osc = audioCtx.createOscillator();
+  var gain = audioCtx.createGain();
   osc.type = type;
   osc.frequency.value = freq;
-  gain.gain.value = vol;
   gain.gain.setValueAtTime(vol, audioCtx.currentTime + delay);
   gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + delay + duration);
   osc.connect(gain);
@@ -168,18 +175,19 @@ function playTone(freq, duration, type = 'square', vol = 0.3, delay = 0) {
   osc.stop(audioCtx.currentTime + delay + duration);
 }
 
-function playNoise(duration, vol = 0.15) {
+function playNoise(duration, vol) {
   if (!audioCtx) return;
-  ensureAudioUnlocked();
-  const bufferSize = audioCtx.sampleRate * duration;
-  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) {
+  ensureAudioResumed();
+  vol = (vol !== undefined) ? vol : 0.15;
+  var bufferSize = Math.floor(audioCtx.sampleRate * duration);
+  var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  var data = buffer.getChannelData(0);
+  for (var i = 0; i < bufferSize; i++) {
     data[i] = (Math.random() * 2 - 1) * vol;
   }
-  const source = audioCtx.createBufferSource();
+  var source = audioCtx.createBufferSource();
   source.buffer = buffer;
-  const gain = audioCtx.createGain();
+  var gain = audioCtx.createGain();
   gain.gain.setValueAtTime(vol, audioCtx.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
   source.connect(gain);
@@ -187,28 +195,22 @@ function playNoise(duration, vol = 0.15) {
   source.start();
 }
 
-// --- SE: Correct ---
+// --- SE ---
 function seCorrect() {
   playTone(523, 0.1, 'square', 0.25);
   playTone(659, 0.1, 'square', 0.25, 0.08);
   playTone(784, 0.15, 'square', 0.25, 0.16);
 }
-
-// --- SE: Wrong ---
 function seWrong() {
   playTone(200, 0.15, 'sawtooth', 0.25);
   playTone(150, 0.2, 'sawtooth', 0.25, 0.12);
 }
-
-// --- SE: Special Ready ---
 function seSpecialReady() {
   playTone(587, 0.1, 'square', 0.3);
   playTone(740, 0.1, 'square', 0.3, 0.1);
   playTone(880, 0.15, 'square', 0.3, 0.2);
   playTone(1175, 0.2, 'triangle', 0.3, 0.3);
 }
-
-// --- SE: Special Attack ---
 function seSpecialAttack() {
   playTone(440, 0.08, 'square', 0.35);
   playTone(554, 0.08, 'square', 0.35, 0.06);
@@ -218,16 +220,12 @@ function seSpecialAttack() {
   playTone(1318, 0.25, 'triangle', 0.35, 0.32);
   playNoise(0.3, 0.1);
 }
-
-// --- SE: Enemy Down ---
 function seEnemyDown() {
   playTone(523, 0.12, 'square', 0.3);
   playTone(659, 0.12, 'square', 0.3, 0.1);
   playTone(784, 0.12, 'square', 0.3, 0.2);
   playTone(1047, 0.3, 'square', 0.3, 0.3);
 }
-
-// --- SE: Game Over ---
 function seGameOver() {
   playTone(392, 0.3, 'sawtooth', 0.25);
   playTone(330, 0.3, 'sawtooth', 0.25, 0.3);
@@ -235,34 +233,29 @@ function seGameOver() {
 }
 
 // --- BGM Loop ---
-const bgmNotes = [
-  // Happy chiptune melody (C major pentatonic with rhythm)
+var bgmNotes = [
   523, 587, 659, 784, 880, 784, 659, 587,
   523, 659, 784, 880, 1047, 880, 784, 659,
   523, 523, 659, 659, 784, 784, 880, 880,
   784, 659, 523, 587, 659, 784, 659, 523,
 ];
-const bgmBass = [
+var bgmBass = [
   262, 262, 330, 330, 392, 392, 440, 440,
   262, 262, 330, 330, 392, 392, 440, 440,
   349, 349, 392, 392, 440, 440, 523, 523,
   349, 330, 262, 262, 330, 392, 330, 262,
 ];
-
-let bgmStep = 0;
+var bgmStep = 0;
 
 function startBGM() {
   if (!audioCtx || bgmInterval) return;
   bgmStep = 0;
-  bgmInterval = setInterval(() => {
+  bgmInterval = setInterval(function() {
     if (!state.bgmOn) return;
-    const noteIdx = bgmStep % bgmNotes.length;
-    playTone(bgmNotes[noteIdx], 0.12, 'square', 0.08);
-    playTone(bgmBass[noteIdx], 0.12, 'triangle', 0.06);
-    // Simple drum-like noise on every 4th beat
-    if (bgmStep % 4 === 0) {
-      playNoise(0.05, 0.04);
-    }
+    var idx = bgmStep % bgmNotes.length;
+    playTone(bgmNotes[idx], 0.12, 'square', 0.08);
+    playTone(bgmBass[idx], 0.12, 'triangle', 0.06);
+    if (bgmStep % 4 === 0) playNoise(0.05, 0.04);
     bgmStep++;
   }, 160);
 }
@@ -277,20 +270,16 @@ function stopBGM() {
 function toggleBGM() {
   state.bgmOn = !state.bgmOn;
   dom.bgmToggle.classList.toggle('muted', !state.bgmOn);
-  if (state.bgmOn) {
-    startBGM();
-  } else {
-    stopBGM();
-  }
+  if (state.bgmOn) startBGM();
+  else stopBGM();
 }
 
 // ===== Timer =====
-let timerInterval = null;
-const TIMER_TICK = 100; // ms
+var timerInterval = null;
+var TIMER_TICK = 100;
 
 function getTimeLimitForStage() {
-  // 敵5体毎に1秒ずつ減少、下限5秒
-  const reduction = Math.floor(state.enemiesDefeated / 5);
+  var reduction = Math.floor(state.enemiesDefeated / 5);
   return Math.max(5, 15 - reduction);
 }
 
@@ -299,15 +288,11 @@ function startTimer() {
   state.timeLimit = getTimeLimitForStage();
   state.remainingTime = state.timeLimit;
   updateTimerUI();
-
-  timerInterval = setInterval(() => {
+  timerInterval = setInterval(function() {
     if (state.isGameOver || state.isPaused) return;
     state.remainingTime = Math.max(0, state.remainingTime - TIMER_TICK / 1000);
     updateTimerUI();
-    if (state.remainingTime <= 0) {
-      // Time's up - treat as wrong
-      handleWrong();
-    }
+    if (state.remainingTime <= 0) handleWrong();
   }, TIMER_TICK);
 }
 
@@ -320,35 +305,29 @@ function stopTimer() {
 
 function updateTimerUI() {
   dom.timeNum.textContent = state.remainingTime.toFixed(1);
-  const pct = (state.remainingTime / state.timeLimit) * 100;
+  var pct = (state.remainingTime / state.timeLimit) * 100;
   dom.timerBar.style.width = pct + '%';
-  // Color urgency
-  if (pct < 25) {
-    dom.timeNum.style.color = '#ef4444';
-  } else if (pct < 50) {
-    dom.timeNum.style.color = '#fbbf24';
-  } else {
-    dom.timeNum.style.color = '#fff';
-  }
+  if (pct < 25) dom.timeNum.style.color = '#ef4444';
+  else if (pct < 50) dom.timeNum.style.color = '#fbbf24';
+  else dom.timeNum.style.color = '#fff';
 }
 
 // ===== Problem Generation =====
 function generateProblem() {
-  let a, b;
+  var a, b;
   do {
     a = Math.floor(Math.random() * 9) + 1;
     b = Math.floor(Math.random() * 9) + 1;
   } while (state.lastProblem && state.lastProblem.a === a && state.lastProblem.b === b);
-
-  state.lastProblem = { a, b };
-  state.currentProblem = { a, b, answer: a * b };
-  dom.questionText.textContent = `${a} × ${b} = ?`;
+  state.lastProblem = { a: a, b: b };
+  state.currentProblem = { a: a, b: b, answer: a * b };
+  dom.questionText.textContent = a + ' \u00D7 ' + b + ' = ?';
 }
 
 // ===== Damage & Battle =====
 function calcDamageToEnemy() {
-  const baseDamage = 10;
-  const speedBonus = Math.floor((state.remainingTime / state.timeLimit) * 15);
+  var baseDamage = 10;
+  var speedBonus = Math.floor((state.remainingTime / state.timeLimit) * 15);
   return baseDamage + speedBonus;
 }
 
@@ -356,10 +335,9 @@ function damageEnemy(dmg) {
   state.enemyHP = Math.max(0, state.enemyHP - dmg);
   updateHPBars();
   showDamageNumber(dmg, false);
-  // Attack animation
   dom.playerChar.classList.add('attacking');
   dom.enemyChar.classList.add('hit');
-  setTimeout(() => {
+  setTimeout(function() {
     dom.playerChar.classList.remove('attacking');
     dom.enemyChar.classList.remove('hit');
   }, 300);
@@ -370,7 +348,7 @@ function damagePlayer(dmg) {
   updateHPBars();
   showDamageNumber(dmg, true);
   dom.playerChar.classList.add('hit');
-  setTimeout(() => {
+  setTimeout(function() {
     dom.playerChar.classList.remove('hit');
   }, 300);
 }
@@ -381,29 +359,25 @@ function healPlayer(amount) {
 }
 
 function updateHPBars() {
-  const playerPct = (state.playerHP / state.playerMaxHP) * 100;
-  const enemyPct = (state.enemyHP / state.enemyMaxHP) * 100;
-  dom.playerHpBar.style.width = playerPct + '%';
-  dom.enemyHpBar.style.width = enemyPct + '%';
-  dom.playerHpText.textContent = `${state.playerHP}/${state.playerMaxHP}`;
-  dom.enemyHpText.textContent = `${state.enemyHP}/${state.enemyMaxHP}`;
+  var pp = (state.playerHP / state.playerMaxHP) * 100;
+  var ep = (state.enemyHP / state.enemyMaxHP) * 100;
+  dom.playerHpBar.style.width = pp + '%';
+  dom.enemyHpBar.style.width = ep + '%';
+  dom.playerHpText.textContent = state.playerHP + '/' + state.playerMaxHP;
+  dom.enemyHpText.textContent = state.enemyHP + '/' + state.enemyMaxHP;
 }
 
 // ===== Show Effects =====
-function showEffect(text, className) {
+function showEffect(text, cls) {
   dom.effectText.textContent = text;
-  dom.effectText.className = 'effect-text show ' + className;
-  setTimeout(() => {
-    dom.effectText.className = 'effect-text';
-  }, 900);
+  dom.effectText.className = 'effect-text show ' + cls;
+  setTimeout(function() { dom.effectText.className = 'effect-text'; }, 900);
 }
 
-function showDamageNumber(value, isPlayerDmg) {
+function showDamageNumber(value, isPlayer) {
   dom.damageNumber.textContent = '-' + value;
-  dom.damageNumber.className = 'damage-number show' + (isPlayerDmg ? ' player-dmg' : '');
-  setTimeout(() => {
-    dom.damageNumber.className = 'damage-number';
-  }, 800);
+  dom.damageNumber.className = 'damage-number show' + (isPlayer ? ' player-dmg' : '');
+  setTimeout(function() { dom.damageNumber.className = 'damage-number'; }, 800);
 }
 
 // ===== Answer Handling =====
@@ -411,28 +385,19 @@ function handleCorrect() {
   stopTimer();
   state.totalCorrect++;
   state.combo++;
-
-  const dmg = calcDamageToEnemy();
+  var dmg = calcDamageToEnemy();
   seCorrect();
   showEffect('HIT!', 'hit');
   damageEnemy(dmg);
-
   dom.comboNum.textContent = state.combo;
 
-  // Check special
   if (state.combo >= 3 && !state.specialReady) {
     state.specialReady = true;
     updateSpecialUI();
     seSpecialReady();
   }
 
-  // Check enemy defeated
-  if (state.enemyHP <= 0) {
-    handleEnemyDefeated();
-    return;
-  }
-
-  // Next problem
+  if (state.enemyHP <= 0) { handleEnemyDefeated(); return; }
   generateProblem();
   startTimer();
   focusInput();
@@ -444,20 +409,12 @@ function handleWrong() {
   state.combo = 0;
   state.specialReady = false;
   updateSpecialUI();
-
   seWrong();
   showEffect('MISS!', 'miss');
   damagePlayer(12);
-
   dom.comboNum.textContent = 0;
 
-  // Check game over
-  if (state.playerHP <= 0) {
-    handleGameOver();
-    return;
-  }
-
-  // Next problem
+  if (state.playerHP <= 0) { handleGameOver(); return; }
   generateProblem();
   startTimer();
   focusInput();
@@ -468,19 +425,16 @@ function handleEnemyDefeated() {
   seEnemyDown();
   showEffect('ENEMY DOWN!', 'down');
   dom.enemyChar.classList.add('dying');
-
-  // Heal player
   healPlayer(15);
 
-  // Advance stage
   state.isPaused = true;
-  setTimeout(() => {
+  setTimeout(function() {
     state.stage++;
     state.enemyMaxHP = 60 + state.stage * 12;
     state.enemyHP = state.enemyMaxHP;
-    dom.enemyChar.classList.remove('dying');
+    renderEnemy(state.stage);
     updateHPBars();
-    updateStageUI();
+    dom.stageNum.textContent = state.stage;
 
     state.isPaused = false;
     generateProblem();
@@ -494,44 +448,33 @@ function handleGameOver() {
   stopTimer();
   stopBGM();
   seGameOver();
-
   dom.resultStats.innerHTML =
-    `STAGE: ${state.stage}<br>` +
-    `ENEMIES DEFEATED: ${state.enemiesDefeated}<br>` +
-    `CORRECT: ${state.totalCorrect}<br>` +
-    `WRONG: ${state.totalWrong}`;
-
-  setTimeout(() => {
-    showScreen('gameover');
-  }, 800);
+    'STAGE: ' + state.stage + '<br>' +
+    'ENEMIES DEFEATED: ' + state.enemiesDefeated + '<br>' +
+    'CORRECT: ' + state.totalCorrect + '<br>' +
+    'WRONG: ' + state.totalWrong;
+  setTimeout(function() { showScreen('gameover'); }, 800);
 }
 
 // ===== Special Attack =====
 function useSpecial() {
   if (!state.specialReady || state.isGameOver || state.isPaused) return;
-
   state.specialReady = false;
   state.combo = 0;
   dom.comboNum.textContent = 0;
   updateSpecialUI();
 
-  const specialDmg = 45 + state.stage * 5;
-
-  // Effects
+  var specialDmg = 45 + state.stage * 5;
   seSpecialAttack();
   showEffect('SPECIAL!!', 'special');
   dom.playerChar.classList.add('special-glow');
   document.body.classList.add('bg-flash');
 
-  setTimeout(() => {
+  setTimeout(function() {
     damageEnemy(specialDmg);
     dom.playerChar.classList.remove('special-glow');
     document.body.classList.remove('bg-flash');
-
-    // Check enemy defeated
-    if (state.enemyHP <= 0) {
-      handleEnemyDefeated();
-    }
+    if (state.enemyHP <= 0) handleEnemyDefeated();
   }, 400);
 }
 
@@ -542,20 +485,14 @@ function updateSpecialUI() {
     dom.specialBtn.classList.add('ready');
     dom.specialBtn.disabled = false;
   } else {
-    const display = Math.min(state.combo, 3);
-    dom.specialNum.textContent = display + '/3';
+    dom.specialNum.textContent = Math.min(state.combo, 3) + '/3';
     dom.specialStatus.classList.remove('ready');
     dom.specialBtn.classList.remove('ready');
     dom.specialBtn.disabled = true;
   }
 }
 
-// ===== UI Updates =====
-function updateStageUI() {
-  dom.stageNum.textContent = state.stage;
-  renderEnemy(state.stage);
-}
-
+// ===== UI =====
 function showScreen(name) {
   dom.startScreen.classList.add('hidden');
   dom.gameScreen.classList.add('hidden');
@@ -567,13 +504,10 @@ function showScreen(name) {
 
 function focusInput() {
   dom.answerInput.value = '';
-  // Small delay to prevent keyboard issues on mobile
-  setTimeout(() => {
-    dom.answerInput.focus();
-  }, 50);
+  setTimeout(function() { dom.answerInput.focus(); }, 50);
 }
 
-// ===== Game Init & Start =====
+// ===== Game Init =====
 function resetState() {
   state.stage = 1;
   state.playerHP = 100;
@@ -596,11 +530,11 @@ function resetState() {
 function startGame() {
   initAudio();
   resetState();
+  renderEnemy(state.stage);
   updateHPBars();
-  updateStageUI();
+  dom.stageNum.textContent = state.stage;
   updateSpecialUI();
   dom.comboNum.textContent = 0;
-  dom.enemyChar.classList.remove('dying');
 
   showScreen('game');
   generateProblem();
@@ -610,23 +544,15 @@ function startGame() {
   if (state.bgmOn) startBGM();
 }
 
-// ===== Submit Answer =====
+// ===== Submit =====
 function submitAnswer() {
   if (state.isGameOver || state.isPaused) return;
-  const val = dom.answerInput.value.trim();
+  var val = dom.answerInput.value.replace(/[^0-9]/g, '').trim();
   if (val === '') return;
-
-  const num = parseInt(val, 10);
-  if (isNaN(num)) {
-    dom.answerInput.value = '';
-    return;
-  }
-
-  if (num === state.currentProblem.answer) {
-    handleCorrect();
-  } else {
-    handleWrong();
-  }
+  var num = parseInt(val, 10);
+  if (isNaN(num)) { dom.answerInput.value = ''; return; }
+  if (num === state.currentProblem.answer) handleCorrect();
+  else handleWrong();
 }
 
 // ===== Event Listeners =====
@@ -634,23 +560,23 @@ dom.startBtn.addEventListener('click', startGame);
 dom.retryBtn.addEventListener('click', startGame);
 dom.submitBtn.addEventListener('click', submitAnswer);
 dom.specialBtn.addEventListener('click', useSpecial);
-dom.bgmToggle.addEventListener('click', () => {
+
+// Form submit (Enter key on mobile/desktop)
+dom.answerForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  submitAnswer();
+});
+
+dom.bgmToggle.addEventListener('click', function() {
   initAudio();
   toggleBGM();
 });
-dom.volumeSlider.addEventListener('input', (e) => {
+dom.volumeSlider.addEventListener('input', function(e) {
   setVolume(e.target.value / 100);
 });
 
-dom.answerInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    submitAnswer();
-  }
-});
-
 // Space key for special (PC)
-document.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', function(e) {
   if (e.code === 'Space' && state.specialReady && !state.isGameOver && !state.isPaused) {
     e.preventDefault();
     useSpecial();
@@ -658,35 +584,34 @@ document.addEventListener('keydown', (e) => {
 });
 
 // Prevent zoom on double tap (mobile)
-document.addEventListener('touchstart', (e) => {
+document.addEventListener('touchstart', function(e) {
   if (e.touches.length > 1) e.preventDefault();
 }, { passive: false });
 
-// Handle visualViewport resize (keyboard open/close)
+// Keyboard open/close: keep input visible
 if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', () => {
-    // Scroll to keep input visible
-    const activeEl = document.activeElement;
-    if (activeEl && activeEl.id === 'answer-input') {
-      setTimeout(() => {
-        activeEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  window.visualViewport.addEventListener('resize', function() {
+    if (document.activeElement && document.activeElement.id === 'answer-input') {
+      setTimeout(function() {
+        document.activeElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       }, 100);
     }
   });
 }
 
 // ===== Global audio unlock for mobile =====
-// Mobile browsers require audio to be started from a user gesture.
-// We listen for the first touch/click anywhere to init and resume AudioContext.
-function onFirstUserGesture() {
+// iOS Safari requires AudioContext.resume() from a direct user gesture.
+// We attach handlers to the first touch/click to unlock audio early.
+function unlockAudio() {
   initAudio();
-  document.removeEventListener('touchstart', onFirstUserGesture);
-  document.removeEventListener('touchend', onFirstUserGesture);
-  document.removeEventListener('click', onFirstUserGesture);
+  document.removeEventListener('touchstart', unlockAudio);
+  document.removeEventListener('touchend', unlockAudio);
+  document.removeEventListener('click', unlockAudio);
 }
-document.addEventListener('touchstart', onFirstUserGesture, { passive: true });
-document.addEventListener('touchend', onFirstUserGesture, { passive: true });
-document.addEventListener('click', onFirstUserGesture);
+document.addEventListener('touchstart', unlockAudio, { passive: true });
+document.addEventListener('touchend', unlockAudio, { passive: true });
+document.addEventListener('click', unlockAudio);
 
 // ===== Init =====
+renderEnemy(1); // Render initial enemy immediately
 showScreen('start');

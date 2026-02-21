@@ -8,7 +8,7 @@
 </head>
 <body>
   <!-- ===== Start Screen ===== -->
-  <div id="start-screen" class="screen">
+  <div id="start-screen" class="screen center-screen">
     <div class="title-block">
       <h1 class="game-title">Sotaro<br>craft 99</h1>
       <p class="subtitle">- kuku battle -</p>
@@ -17,7 +17,7 @@
   </div>
 
   <!-- ===== Game Screen ===== -->
-  <div id="game-screen" class="screen hidden">
+  <div id="game-screen" class="screen game-layout hidden">
     <!-- Title Bar -->
     <div id="title-bar">
       <span class="title-text">Sotaro craft 99</span>
@@ -65,9 +65,9 @@
         </div>
         <span id="enemy-hp-text" class="hp-text">60/60</span>
         <div id="enemy-char" class="character enemy-character">
-          <!-- Enemy is rendered dynamically by JS -->
+          <!-- Rendered by JS -->
         </div>
-        <span class="fighter-label" id="enemy-label">ENEMY 1</span>
+        <span class="fighter-label" id="enemy-label">SLIME Lv.1</span>
       </div>
     </div>
 
@@ -103,10 +103,13 @@
 
     <!-- Input Area -->
     <div id="input-area">
-      <input type="text" id="answer-input" inputmode="numeric" pattern="[0-9]*"
-             placeholder="?" autocomplete="off" autocorrect="off" autocapitalize="off"
-             spellcheck="false" data-form-type="other" data-lpignore="true"
-             name="kuku-answer" maxlength="3">
+      <form id="answer-form" autocomplete="off" action="javascript:void(0);">
+        <input type="tel" id="answer-input"
+               placeholder="?" autocomplete="off" autocorrect="off"
+               autocapitalize="off" spellcheck="false"
+               data-form-type="other" data-lpignore="true"
+               name="kuku-answer" maxlength="3">
+      </form>
       <button id="submit-btn" class="block-btn">OK</button>
       <button id="special-btn" class="block-btn special-btn" disabled>
         SPECIAL (SPACE)
@@ -115,7 +118,7 @@
   </div>
 
   <!-- ===== Game Over Screen ===== -->
-  <div id="gameover-screen" class="screen hidden">
+  <div id="gameover-screen" class="screen center-screen hidden">
     <div class="gameover-content">
       <h2 class="gameover-title">GAME OVER</h2>
       <div id="result-stats" class="result-stats"></div>

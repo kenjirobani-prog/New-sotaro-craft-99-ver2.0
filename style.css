@@ -18,8 +18,6 @@
   --player-color: #3b82f6;
   --player-skin: #d4a574;
   --player-hair: #5c3317;
-  --enemy-color: #22c55e;
-  --enemy-dark: #166534;
   --hp-player: #ef4444;
   --hp-enemy: #f97316;
   --special-glow: #fbbf24;
@@ -37,7 +35,7 @@ body {
   font-weight: 700;
   letter-spacing: 0.05em;
   color: #222;
-  overflow: hidden;
+  overflow-x: hidden;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
@@ -65,11 +63,14 @@ body::after {
 
 /* --- Screens --- */
 .screen {
-  width: 100vw;
-  min-height: 100svh;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+.center-screen {
+  min-height: 100vh;
+  min-height: 100svh;
   justify-content: center;
 }
 .hidden { display: none !important; }
@@ -126,10 +127,8 @@ body::after {
   border-color: #7f1d1d;
 }
 
-/* --- Game Screen Layout --- */
-#game-screen {
-  min-height: 0;
-  height: auto;
+/* --- Game Screen Layout (top-aligned, compact) --- */
+.game-layout {
   justify-content: flex-start;
   padding: 0;
   gap: 0;
@@ -144,11 +143,10 @@ body::after {
   padding: 0.2rem 0.6rem;
   background: rgba(0,0,0,0.7);
   border-bottom: 3px solid #555;
-  flex-shrink: 0;
 }
 .title-text {
   color: #fbbf24;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   text-shadow: 1px 1px 0 #000;
   letter-spacing: 0.08em;
 }
@@ -196,13 +194,11 @@ body::after {
 /* --- Battle Area --- */
 #battle-area {
   width: 100%;
-  flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-around;
   padding: 0.3rem 0.5rem;
   position: relative;
-  min-height: 0;
 }
 
 .fighter-col {
@@ -216,7 +212,7 @@ body::after {
 /* HP Bar */
 .hp-bar-container {
   width: 90%;
-  height: 12px;
+  height: 10px;
   background: #333;
   border: 2px solid #222;
   overflow: hidden;
@@ -228,15 +224,14 @@ body::after {
 .player-bar { background: var(--hp-player); width: 100%; }
 .enemy-bar  { background: var(--hp-enemy);  width: 100%; }
 .hp-text {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   color: #fff;
   text-shadow: 1px 1px 0 #000;
 }
 .fighter-label {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: #fff;
   text-shadow: 1px 1px 0 #000;
-  margin-top: 0.1rem;
 }
 
 /* --- Player Character (Minecraft Style) --- */
@@ -249,39 +244,38 @@ body::after {
 
 /* Player - Head */
 .mc-head {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   background: var(--player-skin);
   border: 2px solid #8B6914;
   position: relative;
   box-shadow: 3px 3px 0 var(--block-shadow);
 }
-/* Hair (top) */
 .mc-head::before {
   content: '';
   position: absolute;
   top: -4px;
   left: -2px;
   right: -2px;
-  height: 10px;
+  height: 9px;
   background: var(--player-hair);
   border: 2px solid #3a1a08;
 }
 .mc-eye {
   position: absolute;
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   background: #333;
-  top: 14px;
+  top: 12px;
 }
-.mc-eye.left-eye  { left: 6px; }
-.mc-eye.right-eye { right: 6px; }
+.mc-eye.left-eye  { left: 5px; }
+.mc-eye.right-eye { right: 5px; }
 .mc-mouth {
   position: absolute;
-  width: 8px;
+  width: 7px;
   height: 3px;
   background: #8B4513;
-  bottom: 5px;
+  bottom: 4px;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -293,15 +287,15 @@ body::after {
   margin-top: -1px;
 }
 .mc-torso {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   background: var(--player-color);
   border: 2px solid #1e40af;
   box-shadow: 2px 2px 0 var(--block-shadow);
 }
 .mc-arm {
-  width: 12px;
-  height: 30px;
+  width: 10px;
+  height: 26px;
   background: var(--player-skin);
   border: 2px solid #8B6914;
   box-shadow: 2px 2px 0 var(--block-shadow);
@@ -316,15 +310,22 @@ body::after {
   margin-top: -1px;
 }
 .mc-leg {
-  width: 12px;
-  height: 20px;
+  width: 10px;
+  height: 16px;
   background: #4a5568;
   border: 2px solid #2d3748;
   box-shadow: 2px 2px 0 var(--block-shadow);
 }
 
-/* --- Enemy Characters (multiple types) --- */
-/* Common enemy parts */
+/* =========================================
+   Enemy Characters (multiple types)
+   Each mob prefixed with .mob-xxx
+   ========================================= */
+.enemy-character {
+  min-height: 40px;
+}
+
+/* Common enemy parts - base styles only */
 .enemy-head {
   position: relative;
   box-shadow: 3px 3px 0 var(--block-shadow);
@@ -350,7 +351,6 @@ body::after {
 .enemy-leg {
   box-shadow: 2px 2px 0 var(--block-shadow);
 }
-/* Slime arms (for types that have them) */
 .enemy-arms {
   display: flex;
   align-items: flex-start;
@@ -362,174 +362,173 @@ body::after {
 .enemy-torso {
   box-shadow: 2px 2px 0 var(--block-shadow);
 }
-/* Horn */
 .enemy-horn {
   position: absolute;
   box-shadow: 1px 1px 0 var(--block-shadow);
 }
 
-/* --- Type: Slime (stage 1-2) --- */
+/* --- Slime (stage 1-2) --- */
 .mob-slime .enemy-head {
-  width: 36px; height: 28px;
+  width: 34px; height: 26px;
   border: 2px solid #166534; background: #22c55e;
   border-radius: 6px 6px 0 0;
 }
-.mob-slime .enemy-eye { width: 6px; height: 6px; top: 8px; }
-.mob-slime .enemy-eye.left-eye { left: 6px; }
-.mob-slime .enemy-eye.right-eye { right: 6px; }
-.mob-slime .enemy-mouth { width: 10px; height: 3px; background: #14532d; bottom: 4px; }
+.mob-slime .enemy-eye { width: 5px; height: 5px; top: 7px; }
+.mob-slime .enemy-eye.left-eye { left: 5px; }
+.mob-slime .enemy-eye.right-eye { right: 5px; }
+.mob-slime .enemy-mouth { width: 10px; height: 3px; background: #14532d; bottom: 3px; }
 .mob-slime .enemy-body {
-  width: 36px; height: 14px;
+  width: 34px; height: 12px;
   border: 2px solid #166534; background: #22c55e;
   border-radius: 0 0 4px 4px;
 }
 
-/* --- Type: Zombie (stage 3-5) --- */
+/* --- Zombie (stage 3-5) --- */
 .mob-zombie .enemy-head {
-  width: 32px; height: 32px;
+  width: 28px; height: 28px;
   border: 2px solid #365314; background: #65a30d;
 }
-.mob-zombie .enemy-eye { width: 6px; height: 6px; top: 10px; }
-.mob-zombie .enemy-eye.left-eye { left: 5px; }
-.mob-zombie .enemy-eye.right-eye { right: 5px; background: #dc2626; }
-.mob-zombie .enemy-mouth { width: 14px; height: 4px; background: #3f6212; bottom: 4px; }
+.mob-zombie .enemy-eye { width: 5px; height: 5px; top: 9px; }
+.mob-zombie .enemy-eye.left-eye { left: 4px; }
+.mob-zombie .enemy-eye.right-eye { right: 4px; background: #dc2626; }
+.mob-zombie .enemy-mouth { width: 12px; height: 3px; background: #3f6212; bottom: 4px; }
 .mob-zombie .enemy-torso {
-  width: 26px; height: 22px;
+  width: 22px; height: 20px;
   border: 2px solid #365314; background: #84cc16;
 }
 .mob-zombie .enemy-arm {
-  width: 10px; height: 24px;
+  width: 9px; height: 22px;
   border: 2px solid #365314; background: #65a30d;
 }
 .mob-zombie .enemy-leg {
-  width: 11px; height: 16px;
+  width: 10px; height: 14px;
   border: 2px solid #1a2e05; background: #4a5568;
 }
 
-/* --- Type: Skeleton (stage 6-9) --- */
+/* --- Skeleton (stage 6-9) --- */
 .mob-skeleton .enemy-head {
-  width: 30px; height: 30px;
+  width: 26px; height: 26px;
   border: 2px solid #a8a29e; background: #e7e5e4;
 }
-.mob-skeleton .enemy-eye { width: 7px; height: 7px; top: 8px; background: #1c1917; }
-.mob-skeleton .enemy-eye.left-eye { left: 4px; }
-.mob-skeleton .enemy-eye.right-eye { right: 4px; }
-.mob-skeleton .enemy-mouth { width: 12px; height: 3px; background: #1c1917; bottom: 5px; }
+.mob-skeleton .enemy-eye { width: 6px; height: 6px; top: 7px; background: #1c1917; }
+.mob-skeleton .enemy-eye.left-eye { left: 3px; }
+.mob-skeleton .enemy-eye.right-eye { right: 3px; }
+.mob-skeleton .enemy-mouth { width: 10px; height: 3px; background: #1c1917; bottom: 4px; }
 .mob-skeleton .enemy-torso {
-  width: 20px; height: 22px;
+  width: 18px; height: 20px;
   border: 2px solid #a8a29e; background: #d6d3d1;
 }
 .mob-skeleton .enemy-arm {
-  width: 8px; height: 26px;
+  width: 7px; height: 22px;
   border: 2px solid #a8a29e; background: #e7e5e4;
 }
 .mob-skeleton .enemy-leg {
-  width: 9px; height: 18px;
+  width: 8px; height: 16px;
   border: 2px solid #a8a29e; background: #d6d3d1;
 }
 
-/* --- Type: Spider (stage 10-14) --- */
+/* --- Spider (stage 10-14) --- */
 .mob-spider .enemy-head {
-  width: 28px; height: 22px;
+  width: 24px; height: 18px;
   border: 2px solid #451a03; background: #78350f;
 }
-.mob-spider .enemy-eye { width: 5px; height: 5px; top: 5px; background: #dc2626; }
-.mob-spider .enemy-eye.left-eye { left: 4px; }
-.mob-spider .enemy-eye.right-eye { right: 4px; }
+.mob-spider .enemy-eye { width: 4px; height: 4px; top: 4px; background: #dc2626; }
+.mob-spider .enemy-eye.left-eye { left: 3px; }
+.mob-spider .enemy-eye.right-eye { right: 3px; }
 .mob-spider .enemy-body {
-  width: 36px; height: 20px;
+  width: 32px; height: 16px;
   border: 2px solid #451a03; background: #92400e;
   border-radius: 4px;
 }
 .mob-spider .enemy-legs { gap: 1px; }
 .mob-spider .enemy-leg {
-  width: 6px; height: 14px;
+  width: 5px; height: 12px;
   border: 2px solid #451a03; background: #78350f;
 }
 
-/* --- Type: Creeper (stage 15-19) --- */
+/* --- Creeper (stage 15-19) --- */
 .mob-creeper .enemy-head {
-  width: 32px; height: 32px;
+  width: 28px; height: 28px;
   border: 2px solid #166534; background: #4ade80;
 }
-.mob-creeper .enemy-eye { width: 5px; height: 7px; top: 8px; background: #14532d; }
-.mob-creeper .enemy-eye.left-eye { left: 6px; }
-.mob-creeper .enemy-eye.right-eye { right: 6px; }
+.mob-creeper .enemy-eye { width: 4px; height: 6px; top: 7px; background: #14532d; }
+.mob-creeper .enemy-eye.left-eye { left: 5px; }
+.mob-creeper .enemy-eye.right-eye { right: 5px; }
 .mob-creeper .enemy-mouth {
-  width: 6px; height: 8px; background: #14532d; bottom: 4px;
-  box-shadow: -4px 0 0 #14532d, 4px 0 0 #14532d;
+  width: 4px; height: 6px; background: #14532d; bottom: 4px;
+  box-shadow: -3px 0 0 #14532d, 3px 0 0 #14532d;
 }
 .mob-creeper .enemy-body {
-  width: 24px; height: 26px;
+  width: 20px; height: 22px;
   border: 2px solid #166534; background: #4ade80;
 }
 .mob-creeper .enemy-leg {
-  width: 10px; height: 12px;
+  width: 9px; height: 10px;
   border: 2px solid #166534; background: #4ade80;
 }
 
-/* --- Type: Enderman (stage 20-24) --- */
+/* --- Enderman (stage 20-24) --- */
 .mob-enderman .enemy-head {
-  width: 32px; height: 28px;
+  width: 28px; height: 24px;
   border: 2px solid #1e1b4b; background: #312e81;
 }
-.mob-enderman .enemy-eye { width: 10px; height: 4px; top: 10px; background: #c084fc; }
+.mob-enderman .enemy-eye { width: 8px; height: 3px; top: 9px; background: #c084fc; }
 .mob-enderman .enemy-eye.left-eye { left: 2px; }
 .mob-enderman .enemy-eye.right-eye { right: 2px; }
 .mob-enderman .enemy-torso {
-  width: 18px; height: 28px;
+  width: 16px; height: 24px;
   border: 2px solid #1e1b4b; background: #312e81;
 }
 .mob-enderman .enemy-arm {
-  width: 7px; height: 32px;
+  width: 6px; height: 28px;
   border: 2px solid #1e1b4b; background: #312e81;
 }
 .mob-enderman .enemy-leg {
-  width: 8px; height: 24px;
+  width: 7px; height: 20px;
   border: 2px solid #1e1b4b; background: #312e81;
 }
 
-/* --- Type: Blaze (stage 25-29) --- */
+/* --- Blaze (stage 25-29) --- */
 .mob-blaze .enemy-head {
-  width: 30px; height: 30px;
+  width: 26px; height: 26px;
   border: 2px solid #92400e; background: #f59e0b;
   box-shadow: 3px 3px 0 var(--block-shadow), 0 0 8px rgba(245,158,11,0.6);
 }
-.mob-blaze .enemy-eye { width: 6px; height: 6px; top: 9px; background: #7c2d12; }
-.mob-blaze .enemy-eye.left-eye { left: 5px; }
-.mob-blaze .enemy-eye.right-eye { right: 5px; }
-.mob-blaze .enemy-mouth { width: 10px; height: 3px; background: #7c2d12; bottom: 5px; }
+.mob-blaze .enemy-eye { width: 5px; height: 5px; top: 7px; background: #7c2d12; }
+.mob-blaze .enemy-eye.left-eye { left: 4px; }
+.mob-blaze .enemy-eye.right-eye { right: 4px; }
+.mob-blaze .enemy-mouth { width: 8px; height: 3px; background: #7c2d12; bottom: 4px; }
 .mob-blaze .enemy-body {
-  width: 26px; height: 18px;
+  width: 22px; height: 16px;
   border: 2px solid #92400e; background: #fbbf24;
   box-shadow: 2px 2px 0 var(--block-shadow), 0 0 6px rgba(251,191,36,0.5);
 }
 .mob-blaze .enemy-leg {
-  width: 8px; height: 12px;
+  width: 7px; height: 10px;
   border: 2px solid #92400e; background: #f59e0b;
 }
 
-/* --- Type: Wither (stage 30+, boss) --- */
+/* --- Wither (stage 30+) --- */
 .mob-wither .enemy-head {
-  width: 36px; height: 36px;
+  width: 32px; height: 32px;
   border: 2px solid #1c1917; background: #44403c;
 }
-.mob-wither .enemy-eye { width: 8px; height: 4px; top: 12px; background: #fafaf9; }
-.mob-wither .enemy-eye.left-eye { left: 5px; }
-.mob-wither .enemy-eye.right-eye { right: 5px; }
-.mob-wither .enemy-mouth { width: 12px; height: 4px; background: #1c1917; bottom: 6px; }
+.mob-wither .enemy-eye { width: 7px; height: 3px; top: 11px; background: #fafaf9; }
+.mob-wither .enemy-eye.left-eye { left: 4px; }
+.mob-wither .enemy-eye.right-eye { right: 4px; }
+.mob-wither .enemy-mouth { width: 10px; height: 3px; background: #1c1917; bottom: 5px; }
 .mob-wither .enemy-horn {
-  top: -8px; left: 50%; transform: translateX(-50%);
-  width: 10px; height: 10px;
+  top: -7px; left: 50%; transform: translateX(-50%);
+  width: 8px; height: 8px;
   border: 2px solid #1c1917; background: #57534e;
 }
 .mob-wither .enemy-body {
-  width: 34px; height: 26px;
+  width: 30px; height: 22px;
   border: 2px solid #1c1917; background: #57534e;
   box-shadow: 2px 2px 0 var(--block-shadow), 0 0 10px rgba(0,0,0,0.5);
 }
 .mob-wither .enemy-leg {
-  width: 14px; height: 14px;
+  width: 12px; height: 12px;
   border: 2px solid #1c1917; background: #44403c;
 }
 
@@ -568,7 +567,7 @@ body::after {
   top: 30%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 900;
   color: #fff;
   text-shadow: 3px 3px 0 #000, -1px -1px 0 #000;
@@ -587,7 +586,7 @@ body::after {
 }
 .effect-text.hit    { color: #fbbf24; }
 .effect-text.miss   { color: #ef4444; }
-.effect-text.special { color: #f0abfc; font-size: 2.4rem; }
+.effect-text.special { color: #f0abfc; font-size: 2.2rem; }
 .effect-text.down   { color: #34d399; }
 
 /* Damage Number */
@@ -595,7 +594,7 @@ body::after {
   position: absolute;
   top: 50%;
   right: 20%;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 900;
   color: #fbbf24;
   text-shadow: 2px 2px 0 #000;
@@ -626,7 +625,6 @@ body::after {
   background: rgba(0,0,0,0.6);
   border-top: 2px solid #555;
   border-bottom: 2px solid #555;
-  flex-shrink: 0;
 }
 .status-item {
   display: flex;
@@ -634,12 +632,12 @@ body::after {
   align-items: center;
 }
 .status-label {
-  font-size: 0.55rem;
+  font-size: 0.5rem;
   color: #aaa;
   letter-spacing: 0.1em;
 }
 .status-value {
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: #fff;
   text-shadow: 1px 1px 0 #000;
 }
@@ -658,9 +656,8 @@ body::after {
 /* --- Timer Bar --- */
 #timer-bar-container {
   width: 100%;
-  height: 8px;
+  height: 6px;
   background: #333;
-  flex-shrink: 0;
 }
 #timer-bar {
   height: 100%;
@@ -672,40 +669,41 @@ body::after {
 /* --- Question Area --- */
 #question-area {
   width: 100%;
-  padding: 0.3rem;
+  padding: 0.25rem;
   text-align: center;
-  flex-shrink: 0;
 }
 .question-text {
-  font-size: 1.8rem;
+  font-size: 1.7rem;
   color: #fff;
   text-shadow: var(--text-shadow);
   background: rgba(0,0,0,0.5);
   display: inline-block;
-  padding: 0.3rem 1.2rem;
+  padding: 0.2rem 1rem;
   border: 3px solid #555;
 }
 
-/* --- Input Area --- */
+/* --- Input Area (vertical stack) --- */
 #input-area {
   width: 100%;
-  padding: 0.3rem 0.8rem 0.4rem;
+  padding: 0.25rem 0.8rem 0.4rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.4rem;
-  flex-shrink: 0;
+  gap: 0.35rem;
   background: rgba(0,0,0,0.4);
   border-top: 2px solid #555;
 }
-#answer-input {
+#answer-form {
   width: 100%;
   max-width: 300px;
+}
+#answer-input {
+  width: 100%;
   font-family: inherit;
   font-size: 1.8rem;
   font-weight: 900;
   text-align: center;
-  padding: 0.5rem;
+  padding: 0.4rem;
   border: 3px solid #555;
   background: #222;
   color: #fff;
@@ -724,7 +722,7 @@ body::after {
   background: #059669;
   border-color: #065f46;
   font-size: 1.3rem;
-  padding: 0.6rem;
+  padding: 0.5rem;
 }
 
 /* --- Special Button --- */
@@ -734,8 +732,8 @@ body::after {
   background: #555;
   border-color: #444;
   color: #888;
-  font-size: 0.95rem;
-  padding: 0.5rem;
+  font-size: 0.9rem;
+  padding: 0.4rem;
 }
 .special-btn:disabled {
   opacity: 0.5;
@@ -790,33 +788,14 @@ body::after {
   100% { filter: brightness(1); }
 }
 
-/* --- Responsive adjustments --- */
-@media (max-height: 600px) {
-  .mc-head { width: 28px; height: 28px; }
-  .mc-head::before { height: 8px; }
-  .mc-eye { width: 5px; height: 5px; top: 11px; }
-  .mc-eye.left-eye { left: 4px; }
-  .mc-eye.right-eye { right: 4px; }
-  .mc-torso { width: 22px; height: 22px; }
-  .mc-arm { width: 10px; height: 24px; }
-  .mc-leg { width: 10px; height: 16px; }
-  .enemy-head { width: 26px; height: 26px; }
-  .enemy-body { width: 24px; height: 20px; }
-  .enemy-leg { width: 10px; height: 12px; }
-  .question-text { font-size: 1.4rem; }
-  #answer-input { font-size: 1.3rem; }
-  .effect-text { font-size: 1.5rem; }
-}
-
+/* --- Desktop cap --- */
 @media (min-width: 500px) {
-  #game-screen {
+  #game-screen, #start-screen, #gameover-screen {
     max-width: 420px;
     margin: 0 auto;
+  }
+  #game-screen {
     border-left: 3px solid #333;
     border-right: 3px solid #333;
-  }
-  #start-screen, #gameover-screen {
-    max-width: 420px;
-    margin: 0 auto;
   }
 }
