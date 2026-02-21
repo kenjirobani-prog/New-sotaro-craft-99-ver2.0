@@ -64,11 +64,17 @@ let bgmInterval = null;
 let masterGain = null;
 
 function initAudio() {
-  if (audioCtx) return;
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  masterGain = audioCtx.createGain();
-  masterGain.gain.value = state.volume;
-  masterGain.connect(audioCtx.destination);
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = state.volume;
+    masterGain.connect(audioCtx.destination);
+  }
+  // iOS/Android: AudioContext starts in 'suspended' state
+  // Must call resume() inside a user gesture handler
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
 }
 
 function setVolume(v) {
@@ -76,9 +82,17 @@ function setVolume(v) {
   if (masterGain) masterGain.gain.value = v;
 }
 
+// Ensure audio is unlocked (call on any user interaction)
+function ensureAudioUnlocked() {
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+}
+
 // --- Synth helpers ---
 function playTone(freq, duration, type = 'square', vol = 0.3, delay = 0) {
   if (!audioCtx) return;
+  ensureAudioUnlocked();
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
   osc.type = type;
@@ -94,6 +108,7 @@ function playTone(freq, duration, type = 'square', vol = 0.3, delay = 0) {
 
 function playNoise(duration, vol = 0.15) {
   if (!audioCtx) return;
+  ensureAudioUnlocked();
   const bufferSize = audioCtx.sampleRate * duration;
   const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
   const data = buffer.getChannelData(0);
@@ -632,6 +647,19 @@ if (window.visualViewport) {
     }
   });
 }
+
+// ===== Global audio unlock for mobile =====
+// Mobile browsers require audio to be started from a user gesture.
+// We listen for the first touch/click anywhere to init and resume AudioContext.
+function onFirstUserGesture() {
+  initAudio();
+  document.removeEventListener('touchstart', onFirstUserGesture);
+  document.removeEventListener('touchend', onFirstUserGesture);
+  document.removeEventListener('click', onFirstUserGesture);
+}
+document.addEventListener('touchstart', onFirstUserGesture, { passive: true });
+document.addEventListener('touchend', onFirstUserGesture, { passive: true });
+document.addEventListener('click', onFirstUserGesture);
 
 // ===== Init =====
 showScreen('start');
