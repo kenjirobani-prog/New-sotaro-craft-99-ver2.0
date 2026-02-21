@@ -15,9 +15,11 @@
   --bg-bottom: #4a8c3f;
   --block-border: #333;
   --block-shadow: rgba(0,0,0,0.35);
-  --player-color: #1a0835;
-  --player-skin: #c9a065;
-  --player-hair: #3d2008;
+  --player-color: #110828;
+  --player-skin: #d4a840;
+  --player-hair: #6b3a1f;
+  --player-stripe: #7c3aed;
+  --player-boot: #a0622d;
   --hp-player: #ef4444;
   --hp-enemy: #f97316;
   --special-glow: #fbbf24;
@@ -265,77 +267,111 @@ body::after {
 
 /* Player - Head */
 .mc-head {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   background: var(--player-skin);
-  border: 2px solid #a07830;
+  border: 2px solid #b08520;
   position: relative;
   box-shadow: 3px 3px 0 var(--block-shadow);
 }
+/* Hair - tall brown block on top */
 .mc-head::before {
   content: '';
   position: absolute;
-  top: -5px;
+  top: -7px;
   left: -2px;
   right: -2px;
-  height: 10px;
-  background: var(--player-hair);
+  height: 14px;
+  background:
+    linear-gradient(to bottom, #4a2210 0%, var(--player-hair) 40%, #5a3018 100%);
   border: 2px solid #2a1505;
+  border-bottom: none;
+}
+/* Hair side fringe */
+.mc-head::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: -2px;
+  width: 5px;
+  height: 8px;
+  background: var(--player-hair);
+  border-left: 2px solid #2a1505;
 }
 .mc-eye {
   position: absolute;
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   background: #22d3ee;
-  top: 12px;
-  box-shadow: inset 1px 1px 0 rgba(0,0,0,0.3);
+  top: 14px;
+  box-shadow: inset 1px 1px 0 #0e7490;
 }
-.mc-eye.left-eye  { left: 5px; }
-.mc-eye.right-eye { right: 5px; }
+.mc-eye.left-eye  { left: 6px; }
+.mc-eye.right-eye { right: 6px; }
 .mc-mouth {
   position: absolute;
-  width: 7px;
+  width: 6px;
   height: 2px;
-  background: #8B6530;
-  bottom: 5px;
+  background: #96703a;
+  bottom: 6px;
   left: 50%;
   transform: translateX(-50%);
 }
 
-/* Player - Body (dark purple robe) */
+/* Player - Body (dark robe with purple horizontal stripes) */
 .mc-body {
   display: flex;
   align-items: flex-start;
   margin-top: -1px;
 }
 .mc-torso {
-  width: 24px;
-  height: 24px;
-  background: linear-gradient(90deg, var(--player-color) 30%, #2e1260 46%, #2e1260 54%, var(--player-color) 70%);
-  border: 2px solid #0d0520;
+  width: 28px;
+  height: 28px;
+  background:
+    linear-gradient(to bottom,
+      var(--player-color) 0%,   var(--player-color) 15%,
+      var(--player-stripe) 15%, var(--player-stripe) 30%,
+      var(--player-color) 30%,  var(--player-color) 50%,
+      var(--player-stripe) 50%, var(--player-stripe) 65%,
+      var(--player-color) 65%,  var(--player-color) 100%
+    );
+  border: 2px solid #0a0418;
   box-shadow: 2px 2px 0 var(--block-shadow);
   position: relative;
 }
 .mc-arm {
-  width: 10px;
-  height: 26px;
-  background: linear-gradient(to bottom, var(--player-color) 62%, var(--player-skin) 62%);
-  border: 2px solid #0d0520;
+  width: 12px;
+  height: 30px;
+  background:
+    linear-gradient(to bottom,
+      var(--player-color) 0%,   var(--player-color) 12%,
+      var(--player-stripe) 12%, var(--player-stripe) 25%,
+      var(--player-color) 25%,  var(--player-color) 45%,
+      var(--player-stripe) 45%, var(--player-stripe) 58%,
+      var(--player-color) 58%,  var(--player-color) 68%,
+      var(--player-skin) 68%,   var(--player-skin) 100%
+    );
+  border: 2px solid #0a0418;
   box-shadow: 2px 2px 0 var(--block-shadow);
   transition: transform 0.15s ease;
   transform-origin: top center;
 }
 
-/* Player - Legs (dark robe lower) */
+/* Player - Legs (dark upper + boot with trim) */
 .mc-legs {
   display: flex;
   gap: 2px;
   margin-top: -1px;
 }
 .mc-leg {
-  width: 10px;
-  height: 16px;
-  background: linear-gradient(to bottom, #130628 60%, #2a1505 60%);
+  width: 12px;
+  height: 18px;
+  background:
+    linear-gradient(to bottom,
+      #0d0520 0%,    #0d0520 40%,
+      #e8c0b8 40%,   #e8c0b8 50%,
+      var(--player-boot) 50%, var(--player-boot) 100%
+    );
   border: 2px solid #0a0318;
   box-shadow: 2px 2px 0 var(--block-shadow);
 }
