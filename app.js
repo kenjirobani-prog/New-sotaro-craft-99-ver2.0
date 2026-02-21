@@ -124,25 +124,35 @@ function renderEnemy(stage) {
 }
 
 // ===== Audio Engine (Web Audio API) =====
-let audioCtx = null;
-let bgmInterval = null;
-let masterGain = null;
+var audioCtx = null;
+var bgmInterval = null;
+var masterGain = null;
+var audioUnlocked = false;
 
 function initAudio() {
   if (!audioCtx) {
     try {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     } catch (e) {
-      return; // AudioContext not supported
+      return;
     }
     masterGain = audioCtx.createGain();
     masterGain.gain.value = state.volume;
     masterGain.connect(audioCtx.destination);
   }
-  // iOS/Android: AudioContext starts 'suspended' until user gesture
+}
+
+// Must be called from direct user gesture (click/touchend)
+function resumeAudio() {
+  if (!audioCtx) initAudio();
+  if (!audioCtx) return Promise.resolve();
   if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
+    return audioCtx.resume().then(function() {
+      audioUnlocked = true;
+    });
   }
+  audioUnlocked = true;
+  return Promise.resolve();
 }
 
 function setVolume(v) {
@@ -150,16 +160,9 @@ function setVolume(v) {
   if (masterGain) masterGain.gain.value = v;
 }
 
-function ensureAudioResumed() {
-  if (audioCtx && audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-}
-
 // --- Synth helpers ---
 function playTone(freq, duration, type, vol, delay) {
-  if (!audioCtx) return;
-  ensureAudioResumed();
+  if (!audioCtx || !audioUnlocked) return;
   type = type || 'square';
   vol = (vol !== undefined) ? vol : 0.3;
   delay = delay || 0;
@@ -176,8 +179,7 @@ function playTone(freq, duration, type, vol, delay) {
 }
 
 function playNoise(duration, vol) {
-  if (!audioCtx) return;
-  ensureAudioResumed();
+  if (!audioCtx || !audioUnlocked) return;
   vol = (vol !== undefined) ? vol : 0.15;
   var bufferSize = Math.floor(audioCtx.sampleRate * duration);
   var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
@@ -503,8 +505,14 @@ function showScreen(name) {
 }
 
 function focusInput() {
-  dom.answerInput.value = '';
-  setTimeout(function() { dom.answerInput.focus(); }, 50);
+  var input = dom.answerInput;
+  input.value = '';
+  // readonly trick: iOS won't show autofill for readonly inputs
+  input.setAttribute('readonly', 'readonly');
+  setTimeout(function() {
+    input.removeAttribute('readonly');
+    input.focus();
+  }, 60);
 }
 
 // ===== Game Init =====
@@ -528,7 +536,11 @@ function resetState() {
 }
 
 function startGame() {
-  initAudio();
+  // Resume audio from user gesture (click), then start BGM
+  resumeAudio().then(function() {
+    if (state.bgmOn) startBGM();
+  });
+
   resetState();
   renderEnemy(state.stage);
   updateHPBars();
@@ -540,8 +552,6 @@ function startGame() {
   generateProblem();
   startTimer();
   focusInput();
-
-  if (state.bgmOn) startBGM();
 }
 
 // ===== Submit =====
@@ -568,8 +578,9 @@ dom.answerForm.addEventListener('submit', function(e) {
 });
 
 dom.bgmToggle.addEventListener('click', function() {
-  initAudio();
-  toggleBGM();
+  resumeAudio().then(function() {
+    toggleBGM();
+  });
 });
 dom.volumeSlider.addEventListener('input', function(e) {
   setVolume(e.target.value / 100);
@@ -600,15 +611,13 @@ if (window.visualViewport) {
 }
 
 // ===== Global audio unlock for mobile =====
-// iOS Safari requires AudioContext.resume() from a direct user gesture.
-// We attach handlers to the first touch/click to unlock audio early.
+// iOS Safari requires AudioContext.resume() from a user gesture (touchend/click).
+// touchstart alone is NOT reliable on iOS for audio unlock.
 function unlockAudio() {
-  initAudio();
-  document.removeEventListener('touchstart', unlockAudio);
+  resumeAudio();
   document.removeEventListener('touchend', unlockAudio);
   document.removeEventListener('click', unlockAudio);
 }
-document.addEventListener('touchstart', unlockAudio, { passive: true });
 document.addEventListener('touchend', unlockAudio, { passive: true });
 document.addEventListener('click', unlockAudio);
 
