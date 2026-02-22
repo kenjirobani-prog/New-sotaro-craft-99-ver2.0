@@ -1,0 +1,22 @@
+{
+  "name": "湊太郎クラフト 九九",
+  "short_name": "湊太郎クラフト",
+  "description": "九九の戦い - マイクラ風九九バトルゲーム",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#2d6e20",
+  "theme_color": "#3d7a32",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
