@@ -79,7 +79,7 @@ body::after {
 
 /* --- Start Screen --- */
 #start-screen {
-  gap: 2rem;
+  gap: 1.5rem;
 }
 .title-block {
   background: transparent;
@@ -147,6 +147,42 @@ body::after {
   padding: 1rem 3rem;
   background: #b91c1c;
   border-color: #7f1d1d;
+}
+
+/* --- Mode Selection --- */
+.mode-select {
+  display: flex;
+  gap: 1rem;
+}
+.mode-btn {
+  font-family: inherit;
+  font-weight: 900;
+  font-size: 1rem;
+  color: #aaa;
+  background: rgba(0,0,0,0.5);
+  border: 3px solid #555;
+  padding: 0.8rem 1.5rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.15s;
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+.mode-btn.selected {
+  color: #fff;
+  background: rgba(0,0,0,0.7);
+  border-color: #fbbf24;
+  box-shadow: 0 0 12px rgba(251,191,36,0.4);
+}
+.mode-icon {
+  font-size: 2rem;
+}
+.mode-label {
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
 }
 
 /* --- Game Screen Layout (top-aligned, compact) --- */
@@ -255,6 +291,12 @@ body::after {
   font-size: 0.65rem;
   color: #fff;
   text-shadow: 1px 1px 0 #000;
+}
+.weapon-label {
+  font-size: 0.6rem;
+  color: #d4a840;
+  text-shadow: 1px 1px 0 #000;
+  transition: color 0.3s;
 }
 
 /* --- Player Character (Minecraft Style) --- */
@@ -591,6 +633,116 @@ body::after {
   border: 2px solid #1c1917; background: #44403c;
 }
 
+/* =========================================
+   Mining Blocks
+   ========================================= */
+.mine-block {
+  width: 48px;
+  height: 48px;
+  border: 3px solid;
+  position: relative;
+  box-shadow: 3px 3px 0 var(--block-shadow);
+}
+.mine-crack {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 16px;
+  height: 2px;
+  background: rgba(0,0,0,0.4);
+  box-shadow: 4px 6px 0 rgba(0,0,0,0.3), -3px -4px 0 rgba(0,0,0,0.2);
+}
+.mine-ore {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  top: 10px;
+  left: 10px;
+  border-radius: 2px;
+  box-shadow: 18px 4px 0 currentColor, 4px 18px 0 currentColor;
+}
+
+/* Stone */
+.mine-stone .mine-block {
+  background: #9ca3af;
+  border-color: #6b7280;
+}
+
+/* Coal */
+.mine-coal .mine-block {
+  background: #9ca3af;
+  border-color: #6b7280;
+}
+.mine-coal .mine-ore {
+  color: #1f2937;
+  background: #1f2937;
+}
+
+/* Iron */
+.mine-iron .mine-block {
+  background: #9ca3af;
+  border-color: #6b7280;
+}
+.mine-iron .mine-ore {
+  color: #fde68a;
+  background: #fde68a;
+}
+
+/* Gold */
+.mine-gold .mine-block {
+  background: #9ca3af;
+  border-color: #6b7280;
+}
+.mine-gold .mine-ore {
+  color: #fbbf24;
+  background: #fbbf24;
+}
+
+/* Redstone */
+.mine-redstone .mine-block {
+  background: #9ca3af;
+  border-color: #6b7280;
+}
+.mine-redstone .mine-ore {
+  color: #ef4444;
+  background: #ef4444;
+  box-shadow: 18px 4px 0 #ef4444, 4px 18px 0 #ef4444, 0 0 6px rgba(239,68,68,0.5);
+}
+
+/* Diamond */
+.mine-diamond .mine-block {
+  background: #9ca3af;
+  border-color: #6b7280;
+}
+.mine-diamond .mine-ore {
+  color: #22d3ee;
+  background: #22d3ee;
+  box-shadow: 18px 4px 0 #22d3ee, 4px 18px 0 #22d3ee, 0 0 8px rgba(34,211,238,0.5);
+}
+
+/* Emerald */
+.mine-emerald .mine-block {
+  background: #9ca3af;
+  border-color: #6b7280;
+}
+.mine-emerald .mine-ore {
+  color: #34d399;
+  background: #34d399;
+  box-shadow: 18px 4px 0 #34d399, 4px 18px 0 #34d399, 0 0 8px rgba(52,211,153,0.5);
+}
+
+/* Netherite */
+.mine-netherite .mine-block {
+  background: #57534e;
+  border-color: #44403c;
+}
+.mine-netherite .mine-ore {
+  color: #a0622d;
+  background: #a0622d;
+  box-shadow: 18px 4px 0 #a0622d, 4px 18px 0 #a0622d;
+}
+
 /* --- Attack Animation --- */
 .player-character.attacking .mc-arm.right-arm {
   transform: rotate(-70deg) translateX(10px);
@@ -643,10 +795,12 @@ body::after {
   60%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   100% { opacity: 0; transform: translate(-50%, -70%) scale(1); }
 }
-.effect-text.hit    { color: #fbbf24; }
-.effect-text.miss   { color: #ef4444; }
-.effect-text.special { color: #f0abfc; font-size: 2.2rem; }
-.effect-text.down   { color: #34d399; }
+.effect-text.hit       { color: #fbbf24; }
+.effect-text.miss      { color: #ef4444; }
+.effect-text.special   { color: #f0abfc; font-size: 2.2rem; }
+.effect-text.down      { color: #34d399; }
+.effect-text.item-get  { color: #a3e635; font-size: 1.5rem; }
+.effect-text.weapon-up { color: #f0abfc; font-size: 1.6rem; }
 
 /* Damage Number */
 .damage-number {
@@ -837,6 +991,37 @@ body::after {
 @keyframes btnGlow {
   from { box-shadow: 0 0 6px var(--special-glow); }
   to   { box-shadow: 0 0 18px var(--special-glow), 0 0 30px rgba(251,191,36,0.4); }
+}
+
+/* --- Item Collection --- */
+.item-collection {
+  width: 100%;
+  max-width: 300px;
+  min-height: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  padding: 0.2rem 0.4rem;
+  background: rgba(0,0,0,0.3);
+  border: 2px solid #444;
+}
+.item-badge {
+  font-size: 1.1rem;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid #555;
+  padding: 1px 4px;
+  line-height: 1;
+}
+.item-count {
+  font-size: 0.55rem;
+  color: #fff;
+  font-weight: 900;
+  margin-left: 1px;
+  text-shadow: 1px 1px 0 #000;
 }
 
 /* --- Game Over Screen --- */

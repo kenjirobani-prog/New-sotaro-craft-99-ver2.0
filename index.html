@@ -13,6 +13,17 @@
       <h1 class="game-title">Sotaro<br>craft 99</h1>
       <p class="subtitle">- kuku battle -</p>
     </div>
+    <!-- Mode Selection -->
+    <div class="mode-select">
+      <button id="mode-battle" class="mode-btn selected">
+        <span class="mode-icon">⚔️</span>
+        <span class="mode-label">バトル</span>
+      </button>
+      <button id="mode-mining" class="mode-btn">
+        <span class="mode-icon">⛏️</span>
+        <span class="mode-label">採掘</span>
+      </button>
+    </div>
     <button id="start-btn" class="block-btn big-btn">START</button>
   </div>
 
@@ -52,6 +63,7 @@
           </div>
         </div>
         <span class="fighter-label">SOTARO</span>
+        <span id="weapon-display" class="weapon-label">✊ こぶし</span>
       </div>
 
       <!-- Effect Text -->
@@ -117,6 +129,8 @@
       <button id="special-btn" class="block-btn special-btn" disabled>
         SPECIAL (SPACE)
       </button>
+      <!-- Item Collection -->
+      <div id="item-collection" class="item-collection"></div>
     </div>
   </div>
 

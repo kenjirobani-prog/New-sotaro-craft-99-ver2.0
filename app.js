@@ -23,6 +23,9 @@ const state = {
   totalWrong: 0,
   bgmOn: true,
   volume: 0.5,
+  items: [],
+  weaponLevel: 0,
+  gameMode: 'battle', // 'battle' or 'mining'
 };
 
 // ===== DOM References =====
@@ -58,70 +61,202 @@ const dom = {
   specialBtn:    $('special-btn'),
   resultStats:   $('result-stats'),
   correctOverlay:$('correct-answer-overlay'),
+  itemCollection:$('item-collection'),
+  weaponDisplay: $('weapon-display'),
+  modeBattle:    $('mode-battle'),
+  modeMining:    $('mode-mining'),
 };
+
+// ===== Weapon System =====
+const WEAPONS = [
+  { name: 'こぶし',   emoji: '✊', color: '#d4a840', dmgBonus: 0 },
+  { name: '木の剣',   emoji: '🗡️', color: '#a0622d', dmgBonus: 3 },
+  { name: '石の剣',   emoji: '🗡️', color: '#9ca3af', dmgBonus: 5 },
+  { name: '鉄の槍',   emoji: '🔱', color: '#d1d5db', dmgBonus: 8 },
+  { name: '金の槍',   emoji: '🔱', color: '#fbbf24', dmgBonus: 11 },
+  { name: '鉄の斧',   emoji: '🪓', color: '#9ca3af', dmgBonus: 14 },
+  { name: 'ダイヤの斧', emoji: '🪓', color: '#22d3ee', dmgBonus: 18 },
+  { name: 'ネザライトの剣', emoji: '⚔️', color: '#6b21a8', dmgBonus: 24 },
+];
+
+function getCurrentWeapon() {
+  var idx = Math.min(state.weaponLevel, WEAPONS.length - 1);
+  return WEAPONS[idx];
+}
+
+function updateWeaponUI() {
+  var w = getCurrentWeapon();
+  dom.weaponDisplay.textContent = w.emoji + ' ' + w.name;
+  dom.weaponDisplay.style.color = w.color;
+  // Update player right arm color to reflect weapon
+  var rightArm = document.querySelector('.mc-arm.right-arm');
+  if (rightArm && state.weaponLevel > 0) {
+    rightArm.style.boxShadow = '2px 2px 0 var(--block-shadow), 0 0 6px ' + w.color;
+  }
+}
+
+// ===== Item System =====
+function addItem(item) {
+  state.items.push(item);
+  renderItems();
+}
+
+function renderItems() {
+  var html = '';
+  // Count items
+  var counts = {};
+  state.items.forEach(function(item) {
+    var key = item.name;
+    if (!counts[key]) counts[key] = { emoji: item.emoji, count: 0 };
+    counts[key].count++;
+  });
+  for (var name in counts) {
+    html += '<span class="item-badge" title="' + name + '">' +
+      counts[name].emoji +
+      (counts[name].count > 1 ? '<span class="item-count">x' + counts[name].count + '</span>' : '') +
+      '</span>';
+  }
+  dom.itemCollection.innerHTML = html;
+}
 
 // ===== Enemy Mob Types =====
 const MOB_TYPES = [
   {
     minStage: 1,
     name: 'SLIME', cssClass: 'mob-slime',
+    item: { name: 'スライムボール', emoji: '🟢' },
     html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div>'
   },
   {
     minStage: 3,
     name: 'ZOMBIE', cssClass: 'mob-zombie',
+    item: { name: '腐った肉', emoji: '🥩' },
     html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-arms"><div class="enemy-arm"></div><div class="enemy-torso"></div><div class="enemy-arm"></div></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
     minStage: 6,
     name: 'SKELETON', cssClass: 'mob-skeleton',
+    item: { name: '骨', emoji: '🦴' },
     html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-arms"><div class="enemy-arm"></div><div class="enemy-torso"></div><div class="enemy-arm"></div></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
     minStage: 10,
     name: 'SPIDER', cssClass: 'mob-spider',
+    item: { name: 'クモの糸', emoji: '🕸️' },
     html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
     minStage: 15,
     name: 'CREEPER', cssClass: 'mob-creeper',
+    item: { name: '火薬', emoji: '💥' },
     html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
     minStage: 20,
     name: 'ENDERMAN', cssClass: 'mob-enderman',
+    item: { name: 'エンダーパール', emoji: '🟣' },
     html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div></div><div class="enemy-arms"><div class="enemy-arm"></div><div class="enemy-torso"></div><div class="enemy-arm"></div></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
     minStage: 25,
     name: 'BLAZE', cssClass: 'mob-blaze',
+    item: { name: 'ブレイズロッド', emoji: '🔥' },
     html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
     minStage: 30,
     name: 'WITHER', cssClass: 'mob-wither',
+    item: { name: 'ネザースター', emoji: '⭐' },
     html: '<div class="enemy-head"><div class="enemy-horn"></div><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
 ];
 
-function getMobForStage(stage) {
-  let mob = MOB_TYPES[0];
-  for (let i = 0; i < MOB_TYPES.length; i++) {
-    if (stage >= MOB_TYPES[i].minStage) mob = MOB_TYPES[i];
+// ===== Mining Targets =====
+const MINE_TYPES = [
+  {
+    minStage: 1,
+    name: '石', cssClass: 'mine-stone',
+    item: { name: '丸石', emoji: '🪨' },
+    html: '<div class="mine-block"><div class="mine-crack"></div></div>'
+  },
+  {
+    minStage: 3,
+    name: '石炭鉱石', cssClass: 'mine-coal',
+    item: { name: '石炭', emoji: '⬛' },
+    html: '<div class="mine-block"><div class="mine-ore"></div><div class="mine-crack"></div></div>'
+  },
+  {
+    minStage: 6,
+    name: '鉄鉱石', cssClass: 'mine-iron',
+    item: { name: '鉄の原石', emoji: '🔘' },
+    html: '<div class="mine-block"><div class="mine-ore"></div><div class="mine-crack"></div></div>'
+  },
+  {
+    minStage: 10,
+    name: '金鉱石', cssClass: 'mine-gold',
+    item: { name: '金の原石', emoji: '🟡' },
+    html: '<div class="mine-block"><div class="mine-ore"></div><div class="mine-crack"></div></div>'
+  },
+  {
+    minStage: 15,
+    name: 'レッドストーン鉱石', cssClass: 'mine-redstone',
+    item: { name: 'レッドストーン', emoji: '🔴' },
+    html: '<div class="mine-block"><div class="mine-ore"></div><div class="mine-crack"></div></div>'
+  },
+  {
+    minStage: 20,
+    name: 'ダイヤモンド鉱石', cssClass: 'mine-diamond',
+    item: { name: 'ダイヤモンド', emoji: '💎' },
+    html: '<div class="mine-block"><div class="mine-ore"></div><div class="mine-crack"></div></div>'
+  },
+  {
+    minStage: 25,
+    name: 'エメラルド鉱石', cssClass: 'mine-emerald',
+    item: { name: 'エメラルド', emoji: '💚' },
+    html: '<div class="mine-block"><div class="mine-ore"></div><div class="mine-crack"></div></div>'
+  },
+  {
+    minStage: 30,
+    name: '古代の残骸', cssClass: 'mine-netherite',
+    item: { name: 'ネザライトの欠片', emoji: '🟤' },
+    html: '<div class="mine-block"><div class="mine-ore"></div><div class="mine-crack"></div></div>'
+  },
+];
+
+function getTargetForStage(stage) {
+  var types = state.gameMode === 'mining' ? MINE_TYPES : MOB_TYPES;
+  var target = types[0];
+  for (var i = 0; i < types.length; i++) {
+    if (stage >= types[i].minStage) target = types[i];
   }
-  return mob;
+  return target;
 }
 
 function renderEnemy(stage) {
-  const mob = getMobForStage(stage);
-  const el = dom.enemyChar;
-  // Remove all mob classes
+  var target = getTargetForStage(stage);
+  var el = dom.enemyChar;
+  // Remove all mob/mine classes
   MOB_TYPES.forEach(function(m) { el.classList.remove(m.cssClass); });
-  // Add new mob class and set HTML
+  MINE_TYPES.forEach(function(m) { el.classList.remove(m.cssClass); });
   el.classList.remove('dying');
-  el.classList.add(mob.cssClass);
-  el.innerHTML = mob.html;
-  dom.enemyLabel.textContent = mob.name + ' Lv.' + stage;
+  el.classList.add(target.cssClass);
+  el.innerHTML = target.html;
+  dom.enemyLabel.textContent = target.name + ' Lv.' + stage;
+}
+
+// ===== Enemy HP Calculation =====
+function getEnemyMaxHP(stage) {
+  // Stage 1: 30 HP, gradually increasing
+  // Stage 1-5: 30-60 (gentle start)
+  // Stage 6-15: 60-120 (moderate)
+  // Stage 16+: 120+ (steep)
+  if (stage <= 5) {
+    return 20 + stage * 8; // 28, 36, 44, 52, 60
+  } else if (stage <= 15) {
+    return 60 + (stage - 5) * 10; // 70, 80, ..., 160
+  } else {
+    return 160 + (stage - 15) * 15; // 175, 190, ...
+  }
 }
 
 // ===== Audio Engine (Web Audio API) =====
@@ -229,10 +364,24 @@ function seEnemyDown() {
   playTone(784, 0.12, 'square', 0.3, 0.2);
   playTone(1047, 0.3, 'square', 0.3, 0.3);
 }
+function seItemGet() {
+  playTone(784, 0.08, 'square', 0.2);
+  playTone(1047, 0.12, 'triangle', 0.25, 0.08);
+}
+function seWeaponUp() {
+  playTone(523, 0.08, 'square', 0.25);
+  playTone(659, 0.08, 'square', 0.25, 0.08);
+  playTone(784, 0.08, 'square', 0.25, 0.16);
+  playTone(1047, 0.2, 'triangle', 0.3, 0.24);
+}
 function seGameOver() {
   playTone(392, 0.3, 'sawtooth', 0.25);
   playTone(330, 0.3, 'sawtooth', 0.25, 0.3);
   playTone(262, 0.5, 'sawtooth', 0.25, 0.6);
+}
+function seMine() {
+  playNoise(0.08, 0.2);
+  playTone(200, 0.05, 'square', 0.15);
 }
 
 // --- BGM Loop ---
@@ -331,7 +480,8 @@ function generateProblem() {
 function calcDamageToEnemy() {
   var baseDamage = 10;
   var speedBonus = Math.floor((state.remainingTime / state.timeLimit) * 15);
-  return baseDamage + speedBonus;
+  var weaponBonus = getCurrentWeapon().dmgBonus;
+  return baseDamage + speedBonus + weaponBonus;
 }
 
 function damageEnemy(dmg) {
@@ -340,6 +490,7 @@ function damageEnemy(dmg) {
   showDamageNumber(dmg, false);
   dom.playerChar.classList.add('attacking');
   dom.enemyChar.classList.add('hit');
+  if (state.gameMode === 'mining') seMine();
   setTimeout(function() {
     dom.playerChar.classList.remove('attacking');
     dom.enemyChar.classList.remove('hit');
@@ -390,7 +541,7 @@ function handleCorrect() {
   state.combo++;
   var dmg = calcDamageToEnemy();
   seCorrect();
-  showEffect('HIT!', 'hit');
+  showEffect(state.gameMode === 'mining' ? 'DIG!' : 'HIT!', 'hit');
   damageEnemy(dmg);
   dom.comboNum.textContent = state.combo;
 
@@ -442,14 +593,34 @@ function showCorrectAnswer(text) {
 function handleEnemyDefeated() {
   state.enemiesDefeated++;
   seEnemyDown();
-  showEffect('ENEMY DOWN!', 'down');
+  var downText = state.gameMode === 'mining' ? 'MINED!' : 'ENEMY DOWN!';
+  showEffect(downText, 'down');
   dom.enemyChar.classList.add('dying');
   healPlayer(15);
 
+  // Drop item
+  var target = getTargetForStage(state.stage);
+  setTimeout(function() {
+    seItemGet();
+    addItem(target.item);
+    showEffect(target.item.emoji + ' GET!', 'item-get');
+  }, 500);
+
+  // Weapon upgrade every 2 defeats
+  var shouldUpgrade = (state.enemiesDefeated % 2 === 0) && state.weaponLevel < WEAPONS.length - 1;
+
   state.isPaused = true;
   setTimeout(function() {
+    // Weapon upgrade
+    if (shouldUpgrade) {
+      state.weaponLevel++;
+      seWeaponUp();
+      updateWeaponUI();
+      showEffect('WEAPON UP!', 'weapon-up');
+    }
+
     state.stage++;
-    state.enemyMaxHP = 60 + state.stage * 12;
+    state.enemyMaxHP = getEnemyMaxHP(state.stage);
     state.enemyHP = state.enemyMaxHP;
     renderEnemy(state.stage);
     updateHPBars();
@@ -467,11 +638,28 @@ function handleGameOver() {
   stopTimer();
   stopBGM();
   seGameOver();
+
+  // Build item summary for results
+  var itemSummary = '';
+  if (state.items.length > 0) {
+    var counts = {};
+    state.items.forEach(function(item) {
+      if (!counts[item.name]) counts[item.name] = { emoji: item.emoji, count: 0 };
+      counts[item.name].count++;
+    });
+    itemSummary = '<br>ITEMS: ';
+    for (var name in counts) {
+      itemSummary += counts[name].emoji + 'x' + counts[name].count + ' ';
+    }
+  }
+
   dom.resultStats.innerHTML =
     'STAGE: ' + state.stage + '<br>' +
-    'ENEMIES DEFEATED: ' + state.enemiesDefeated + '<br>' +
+    (state.gameMode === 'mining' ? 'BLOCKS MINED: ' : 'ENEMIES DEFEATED: ') + state.enemiesDefeated + '<br>' +
     'CORRECT: ' + state.totalCorrect + '<br>' +
-    'WRONG: ' + state.totalWrong;
+    'WRONG: ' + state.totalWrong + '<br>' +
+    'WEAPON: ' + getCurrentWeapon().emoji + ' ' + getCurrentWeapon().name +
+    itemSummary;
   setTimeout(function() { showScreen('gameover'); }, 800);
 }
 
@@ -537,7 +725,7 @@ function resetState() {
   state.stage = 1;
   state.playerHP = 100;
   state.playerMaxHP = 100;
-  state.enemyMaxHP = 60 + 1 * 12;
+  state.enemyMaxHP = getEnemyMaxHP(1);
   state.enemyHP = state.enemyMaxHP;
   state.combo = 0;
   state.specialReady = false;
@@ -550,6 +738,8 @@ function resetState() {
   state.enemiesDefeated = 0;
   state.totalCorrect = 0;
   state.totalWrong = 0;
+  state.items = [];
+  state.weaponLevel = 0;
 }
 
 function startGame() {
@@ -564,6 +754,8 @@ function startGame() {
   dom.stageNum.textContent = state.stage;
   updateSpecialUI();
   dom.comboNum.textContent = 0;
+  renderItems();
+  updateWeaponUI();
 
   showScreen('game');
   generateProblem();
@@ -587,6 +779,18 @@ dom.startBtn.addEventListener('click', startGame);
 dom.retryBtn.addEventListener('click', startGame);
 dom.submitBtn.addEventListener('click', submitAnswer);
 dom.specialBtn.addEventListener('click', useSpecial);
+
+// Mode selection
+dom.modeBattle.addEventListener('click', function() {
+  state.gameMode = 'battle';
+  dom.modeBattle.classList.add('selected');
+  dom.modeMining.classList.remove('selected');
+});
+dom.modeMining.addEventListener('click', function() {
+  state.gameMode = 'mining';
+  dom.modeMining.classList.add('selected');
+  dom.modeBattle.classList.remove('selected');
+});
 
 // Form submit (Enter key on mobile/desktop)
 dom.answerForm.addEventListener('submit', function(e) {
