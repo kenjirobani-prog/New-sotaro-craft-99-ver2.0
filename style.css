@@ -11,10 +11,11 @@
 }
 
 :root {
-  --bg-top: #87ceeb;
-  --bg-bottom: #4a8c3f;
-  --block-border: #333;
-  --block-shadow: rgba(0,0,0,0.35);
+  --bg-top: #78b9e2;
+  --bg-mid: #5a9e5a;
+  --bg-bottom: #3d6e2f;
+  --block-border: #2a2a2a;
+  --block-shadow: rgba(0,0,0,0.4);
   --player-color: #110828;
   --player-skin: #d4a840;
   --player-hair: #6b3a1f;
@@ -23,8 +24,11 @@
   --hp-player: #ef4444;
   --hp-enemy: #f97316;
   --special-glow: #fbbf24;
-  --text-shadow: 2px 2px 0 #333;
-  --grid-color: rgba(0,0,0,0.08);
+  --text-shadow: 2px 2px 0 #1a1a1a;
+  --grid-color: rgba(0,0,0,0.06);
+  --panel-bg: rgba(0,0,0,0.65);
+  --panel-border: #5a5a5a;
+  --accent-gold: #f5c842;
 }
 
 html {
@@ -33,9 +37,9 @@ html {
 }
 
 body {
-  font-family: 'Segoe UI', 'Hiragino Sans', 'Noto Sans JP', sans-serif;
-  font-weight: 700;
-  letter-spacing: 0.05em;
+  font-family: 'DotGothic16', 'Press Start 2P', 'Segoe UI', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.04em;
   color: #222;
   overflow-x: hidden;
   touch-action: manipulation;
@@ -43,13 +47,20 @@ body {
   user-select: none;
 }
 
-/* --- Block Grid Background --- */
+/* --- Block Grid Background (richer Minecraft-style) --- */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background:
-    linear-gradient(to bottom, var(--bg-top) 0%, #6db86b 60%, var(--bg-bottom) 100%);
+    linear-gradient(to bottom,
+      var(--bg-top) 0%,
+      #6aafe0 15%,
+      #8dc98d 45%,
+      var(--bg-mid) 65%,
+      var(--bg-bottom) 85%,
+      #2a5420 100%
+    );
   z-index: -2;
 }
 body::after {
@@ -59,7 +70,7 @@ body::after {
   background-image:
     linear-gradient(var(--grid-color) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-size: 16px 16px;
   z-index: -1;
 }
 
@@ -82,71 +93,87 @@ body::after {
   gap: 1.5rem;
 }
 .title-block {
-  background: transparent;
-  border: none;
-  padding: 1rem 1rem;
+  background: var(--panel-bg);
+  border: 4px solid var(--panel-border);
+  padding: 1.2rem 2rem;
   text-align: center;
-  box-shadow: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    0 6px 0 rgba(0,0,0,0.4),
+    0 8px 16px rgba(0,0,0,0.3);
 }
 .game-title {
-  font-size: 3rem;
-  line-height: 1.25;
-  letter-spacing: 0.04em;
+  font-family: 'Press Start 2P', 'DotGothic16', monospace;
+  font-size: 2rem;
+  line-height: 1.5;
+  letter-spacing: 0.06em;
   /* Stone texture fill */
   background:
     repeating-linear-gradient(
       90deg,
-      #9a9a9a 0px, #b0b0b0 3px, #858585 5px, #a5a5a5 8px, #8a8a8a 11px, #999 14px
+      #9a9a9a 0px, #b8b8b8 3px, #888 5px, #a8a8a8 8px, #8e8e8e 11px, #a0a0a0 14px
     ),
     repeating-linear-gradient(
       0deg,
-      #929292 0px, #aaa 4px, #808080 7px, #989898 10px
+      #959595 0px, #b0b0b0 4px, #848484 7px, #9c9c9c 10px
     );
   background-blend-mode: overlay;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  -webkit-text-stroke: 2.5px #1a1a1a;
+  -webkit-text-stroke: 2px #1a1a1a;
   paint-order: stroke fill;
-  /* 3D depth + outline shadow */
+  /* 3D depth */
   filter:
-    drop-shadow(2px 2px 0 #4a4a4a)
+    drop-shadow(1px 1px 0 #4a4a4a)
     drop-shadow(2px 2px 0 #333)
-    drop-shadow(3px 3px 0 #222);
+    drop-shadow(3px 3px 0 #1a1a1a);
 }
 .subtitle {
-  color: #fbbf24;
+  font-family: 'DotGothic16', sans-serif;
+  color: var(--accent-gold);
   font-size: 1.1rem;
-  margin-top: 0.5rem;
-  letter-spacing: 0.2em;
-  text-shadow: 2px 2px 0 #333, -1px -1px 0 #333;
+  margin-top: 0.6rem;
+  letter-spacing: 0.25em;
+  text-shadow: 2px 2px 0 #333, 0 0 8px rgba(245,200,66,0.3);
 }
 
 /* --- Block Buttons --- */
 .block-btn {
-  font-family: inherit;
-  font-weight: 900;
+  font-family: 'DotGothic16', sans-serif;
+  font-weight: 400;
   font-size: 1.1rem;
   letter-spacing: 0.1em;
   color: #fff;
-  background: #555;
+  background: linear-gradient(to bottom, #666 0%, #555 40%, #444 100%);
   border: 3px solid #333;
+  border-top-color: #777;
+  border-left-color: #666;
   padding: 0.6rem 1.6rem;
   cursor: pointer;
-  box-shadow: 4px 4px 0 var(--block-shadow);
+  box-shadow:
+    4px 4px 0 var(--block-shadow),
+    inset 0 1px 0 rgba(255,255,255,0.15);
   transition: transform 0.08s, box-shadow 0.08s;
   -webkit-appearance: none;
   border-radius: 0;
+  text-shadow: 1px 1px 0 #000;
 }
 .block-btn:active {
   transform: translate(2px, 2px);
   box-shadow: 2px 2px 0 var(--block-shadow);
 }
 .big-btn {
-  font-size: 1.6rem;
+  font-family: 'Press Start 2P', 'DotGothic16', monospace;
+  font-size: 1.2rem;
   padding: 1rem 3rem;
-  background: #b91c1c;
+  background: linear-gradient(to bottom, #dc2626 0%, #b91c1c 40%, #991b1b 100%);
   border-color: #7f1d1d;
+  border-top-color: #ef4444;
+  border-left-color: #dc2626;
+  box-shadow:
+    4px 4px 0 var(--block-shadow),
+    inset 0 2px 0 rgba(255,255,255,0.2);
 }
 
 /* --- Mode Selection --- */
@@ -198,16 +225,17 @@ body::after {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.2rem 0.6rem;
-  background: rgba(0,0,0,0.7);
-  border-bottom: 3px solid #555;
+  padding: 0.3rem 0.6rem;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.75), rgba(0,0,0,0.85));
+  border-bottom: 3px solid var(--panel-border);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
 .title-text {
-  color: #b0b0b0;
-  font-size: 0.9rem;
-  text-shadow: 1px 1px 0 #000, -1px -1px 0 #1a1a1a;
-  letter-spacing: 0.08em;
-  -webkit-text-stroke: 0.5px #222;
+  font-family: 'Press Start 2P', monospace;
+  color: #c0c0c0;
+  font-size: 0.55rem;
+  text-shadow: 1px 1px 0 #000;
+  letter-spacing: 0.06em;
 }
 .sound-controls {
   display: flex;
@@ -271,32 +299,47 @@ body::after {
 /* HP Bar */
 .hp-bar-container {
   width: 90%;
-  height: 10px;
-  background: #333;
-  border: 2px solid #222;
+  height: 12px;
+  background: #1a1a1a;
+  border: 2px solid #444;
+  border-top-color: #222;
+  border-left-color: #333;
   overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
 }
 .hp-bar {
   height: 100%;
   transition: width 0.3s ease;
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3);
 }
-.player-bar { background: var(--hp-player); width: 100%; }
-.enemy-bar  { background: var(--hp-enemy);  width: 100%; }
+.player-bar {
+  background: linear-gradient(to bottom, #f87171, var(--hp-player), #dc2626);
+  width: 100%;
+}
+.enemy-bar {
+  background: linear-gradient(to bottom, #fb923c, var(--hp-enemy), #ea580c);
+  width: 100%;
+}
 .hp-text {
-  font-size: 0.6rem;
-  color: #fff;
+  font-size: 0.55rem;
+  color: #e0e0e0;
   text-shadow: 1px 1px 0 #000;
 }
 .fighter-label {
-  font-size: 0.65rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.45rem;
   color: #fff;
   text-shadow: 1px 1px 0 #000;
+  letter-spacing: 0.05em;
 }
 .weapon-label {
   font-size: 0.6rem;
   color: #d4a840;
   text-shadow: 1px 1px 0 #000;
   transition: color 0.3s;
+  background: rgba(0,0,0,0.3);
+  padding: 1px 6px;
+  border: 1px solid #555;
 }
 
 /* --- Player Character (Minecraft Style) --- */
@@ -864,10 +907,11 @@ body::after {
   width: 100%;
   display: flex;
   justify-content: space-around;
-  padding: 0.15rem 0.5rem;
-  background: rgba(0,0,0,0.6);
-  border-top: 2px solid #555;
-  border-bottom: 2px solid #555;
+  padding: 0.25rem 0.5rem;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.6));
+  border-top: 2px solid var(--panel-border);
+  border-bottom: 2px solid var(--panel-border);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
 }
 .status-item {
   display: flex;
@@ -875,12 +919,14 @@ body::after {
   align-items: center;
 }
 .status-label {
-  font-size: 0.5rem;
-  color: #aaa;
-  letter-spacing: 0.1em;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.35rem;
+  color: #999;
+  letter-spacing: 0.08em;
 }
 .status-value {
-  font-size: 0.95rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.7rem;
   color: #fff;
   text-shadow: 1px 1px 0 #000;
 }
@@ -912,29 +958,35 @@ body::after {
 /* --- Question Area --- */
 #question-area {
   width: 100%;
-  padding: 0.25rem;
+  padding: 0.3rem;
   text-align: center;
 }
 .question-text {
-  font-size: 1.7rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.3rem;
   color: #fff;
   text-shadow: var(--text-shadow);
-  background: rgba(0,0,0,0.5);
+  background: linear-gradient(to bottom, rgba(0,0,0,0.55), rgba(0,0,0,0.7));
   display: inline-block;
-  padding: 0.2rem 1rem;
-  border: 3px solid #555;
+  padding: 0.35rem 1.2rem;
+  border: 3px solid var(--panel-border);
+  border-top-color: #777;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    0 2px 4px rgba(0,0,0,0.3);
 }
 
 /* --- Input Area (vertical stack) --- */
 #input-area {
   width: 100%;
-  padding: 0.25rem 0.8rem 0.4rem;
+  padding: 0.3rem 0.8rem 0.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.35rem;
-  background: rgba(0,0,0,0.4);
-  border-top: 2px solid #555;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.65));
+  border-top: 2px solid var(--panel-border);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
 }
 #answer-form {
   width: 100%;
@@ -942,30 +994,36 @@ body::after {
 }
 #answer-input {
   width: 100%;
-  font-family: inherit;
-  font-size: 1.8rem;
-  font-weight: 900;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.5rem;
   text-align: center;
-  padding: 0.4rem;
+  padding: 0.45rem;
   border: 3px solid #555;
-  background: #222;
+  border-top-color: #333;
+  border-left-color: #444;
+  background: linear-gradient(to bottom, #1a1a1a, #252525);
   color: #fff;
   outline: none;
   letter-spacing: 0.15em;
   border-radius: 0;
   -webkit-appearance: none;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
 }
 #answer-input:focus {
-  border-color: #fbbf24;
-  box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+  border-color: var(--accent-gold);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 0 10px rgba(245,200,66,0.4);
 }
 #submit-btn {
   width: 100%;
   max-width: 300px;
-  background: #059669;
+  background: linear-gradient(to bottom, #10b981, #059669, #047857);
   border-color: #065f46;
+  border-top-color: #34d399;
   font-size: 1.3rem;
   padding: 0.5rem;
+  box-shadow:
+    4px 4px 0 var(--block-shadow),
+    inset 0 1px 0 rgba(255,255,255,0.2);
 }
 
 /* --- Special Button --- */
@@ -1026,7 +1084,7 @@ body::after {
 
 /* --- Game Over Screen --- */
 #gameover-screen {
-  background: rgba(0,0,0,0.85);
+  background: rgba(0,0,0,0.9);
 }
 .gameover-content {
   text-align: center;
@@ -1034,22 +1092,28 @@ body::after {
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
+  background: var(--panel-bg);
+  border: 4px solid var(--panel-border);
+  padding: 2rem 2.5rem;
+  box-shadow: 0 0 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
 }
 .gameover-title {
-  font-size: 2.5rem;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.5rem;
   color: #ef4444;
-  text-shadow: 3px 3px 0 #000;
-  letter-spacing: 0.15em;
+  text-shadow: 3px 3px 0 #7f1d1d, 0 0 20px rgba(239,68,68,0.4);
+  letter-spacing: 0.1em;
 }
 .result-stats {
   color: #ddd;
-  font-size: 1rem;
-  line-height: 1.8;
+  font-size: 0.85rem;
+  line-height: 2;
   text-shadow: 1px 1px 0 #000;
 }
 #retry-btn {
-  background: #2563eb;
+  background: linear-gradient(to bottom, #3b82f6, #2563eb, #1d4ed8);
   border-color: #1e40af;
+  border-top-color: #60a5fa;
 }
 
 /* --- Background Flash --- */

@@ -384,38 +384,134 @@ function seMine() {
   playTone(200, 0.05, 'square', 0.15);
 }
 
-// --- BGM Loop ---
-var bgmNotes = [
-  523, 587, 659, 784, 880, 784, 659, 587,
-  523, 659, 784, 880, 1047, 880, 784, 659,
-  523, 523, 659, 659, 784, 784, 880, 880,
-  784, 659, 523, 587, 659, 784, 659, 523,
-];
-var bgmBass = [
-  262, 262, 330, 330, 392, 392, 440, 440,
-  262, 262, 330, 330, 392, 392, 440, 440,
-  349, 349, 392, 392, 440, 440, 523, 523,
-  349, 330, 262, 262, 330, 392, 330, 262,
-];
+// --- BGM System (Stage-adaptive RPG music) ---
 var bgmStep = 0;
+var bgmCurrentTier = -1;
+
+// Tier 0: Bright adventure (Stage 1-5) - C major, upbeat
+var bgmTier0 = {
+  tempo: 180,
+  melody: [
+    523, 587, 659, 784, 880, 784, 659, 784,
+    880, 1047, 880, 784, 659, 784, 880, 659,
+    523, 659, 784, 880, 1047, 880, 784, 659,
+    784, 659, 587, 523, 587, 659, 523, 0,
+  ],
+  bass: [
+    262, 262, 330, 330, 349, 349, 392, 392,
+    440, 440, 392, 392, 330, 330, 349, 349,
+    262, 262, 330, 330, 349, 349, 440, 440,
+    392, 330, 294, 262, 294, 330, 262, 262,
+  ],
+  melType: 'square', bassType: 'triangle',
+  melVol: 0.07, bassVol: 0.05, drumVol: 0.03, drumEvery: 4,
+};
+
+// Tier 1: Battle intensity (Stage 6-14) - A minor, driving rhythm
+var bgmTier1 = {
+  tempo: 200,
+  melody: [
+    440, 523, 659, 523, 440, 392, 440, 523,
+    659, 784, 659, 523, 440, 523, 659, 784,
+    880, 784, 659, 523, 587, 659, 587, 523,
+    440, 523, 440, 392, 349, 392, 440, 0,
+  ],
+  bass: [
+    220, 220, 262, 262, 294, 294, 262, 262,
+    220, 220, 262, 262, 294, 294, 330, 330,
+    349, 349, 330, 330, 294, 294, 262, 262,
+    220, 220, 196, 196, 175, 196, 220, 220,
+  ],
+  melType: 'square', bassType: 'sawtooth',
+  melVol: 0.07, bassVol: 0.04, drumVol: 0.04, drumEvery: 2,
+};
+
+// Tier 2: Dark serious (Stage 15-24) - D minor, tension
+var bgmTier2 = {
+  tempo: 170,
+  melody: [
+    587, 523, 440, 523, 587, 698, 659, 587,
+    523, 440, 392, 440, 523, 587, 523, 440,
+    587, 698, 784, 698, 587, 523, 587, 698,
+    659, 587, 523, 440, 392, 440, 523, 0,
+  ],
+  bass: [
+    294, 294, 262, 262, 233, 233, 262, 262,
+    294, 294, 349, 349, 330, 330, 294, 294,
+    233, 233, 262, 262, 294, 294, 349, 349,
+    330, 294, 262, 233, 196, 220, 262, 262,
+  ],
+  melType: 'sawtooth', bassType: 'sawtooth',
+  melVol: 0.06, bassVol: 0.04, drumVol: 0.05, drumEvery: 2,
+};
+
+// Tier 3: Epic boss (Stage 25+) - E minor, intense
+var bgmTier3 = {
+  tempo: 220,
+  melody: [
+    659, 784, 880, 784, 659, 587, 659, 784,
+    880, 1047, 988, 880, 784, 880, 988, 880,
+    659, 784, 880, 988, 1047, 988, 880, 784,
+    659, 587, 523, 587, 659, 784, 659, 0,
+  ],
+  bass: [
+    165, 165, 196, 196, 220, 220, 247, 247,
+    165, 165, 196, 196, 220, 220, 262, 262,
+    330, 330, 294, 294, 262, 262, 247, 247,
+    220, 196, 165, 165, 196, 220, 165, 165,
+  ],
+  melType: 'square', bassType: 'sawtooth',
+  melVol: 0.07, bassVol: 0.05, drumVol: 0.05, drumEvery: 2,
+};
+
+var bgmTiers = [bgmTier0, bgmTier1, bgmTier2, bgmTier3];
+
+function getBGMTier() {
+  var s = state.stage;
+  if (s >= 25) return 3;
+  if (s >= 15) return 2;
+  if (s >= 6)  return 1;
+  return 0;
+}
 
 function startBGM() {
   if (!audioCtx || bgmInterval) return;
   bgmStep = 0;
+  bgmCurrentTier = getBGMTier();
+  var tier = bgmTiers[bgmCurrentTier];
   bgmInterval = setInterval(function() {
     if (!state.bgmOn) return;
-    var idx = bgmStep % bgmNotes.length;
-    playTone(bgmNotes[idx], 0.12, 'square', 0.08);
-    playTone(bgmBass[idx], 0.12, 'triangle', 0.06);
-    if (bgmStep % 4 === 0) playNoise(0.05, 0.04);
+    // Check if tier should change
+    var newTier = getBGMTier();
+    if (newTier !== bgmCurrentTier) {
+      bgmCurrentTier = newTier;
+      tier = bgmTiers[bgmCurrentTier];
+      bgmStep = 0; // Reset to start of new melody
+    }
+    var idx = bgmStep % tier.melody.length;
+    var melNote = tier.melody[idx];
+    var bassNote = tier.bass[idx];
+    if (melNote > 0) playTone(melNote, 0.1, tier.melType, tier.melVol);
+    if (bassNote > 0) playTone(bassNote, 0.12, tier.bassType, tier.bassVol);
+    // Percussion pattern
+    if (bgmStep % tier.drumEvery === 0) playNoise(0.04, tier.drumVol);
+    if (bgmStep % 8 === 4) playNoise(0.02, tier.drumVol * 0.6);
     bgmStep++;
-  }, 160);
+  }, Math.floor(60000 / (tier ? tier.tempo : 180)));
 }
 
 function stopBGM() {
   if (bgmInterval) {
     clearInterval(bgmInterval);
     bgmInterval = null;
+  }
+}
+
+// Restart BGM to pick up new tier tempo
+function refreshBGM() {
+  if (state.bgmOn && bgmInterval) {
+    stopBGM();
+    startBGM();
   }
 }
 
@@ -625,6 +721,7 @@ function handleEnemyDefeated() {
     renderEnemy(state.stage);
     updateHPBars();
     dom.stageNum.textContent = state.stage;
+    refreshBGM();
 
     state.isPaused = false;
     generateProblem();
