@@ -68,6 +68,8 @@ const dom = {
   clearScreen:   $('clear-screen'),
   clearStats:    $('clear-stats'),
   clearRetryBtn: $('clear-retry-btn'),
+  titleBtn:      $('title-btn'),
+  scoreHistory:  $('score-history'),
 };
 
 // ===== Weapon System =====
@@ -255,9 +257,9 @@ function renderEnemy(stage) {
 
 // ===== Enemy HP Calculation =====
 function getEnemyMaxHP(stage) {
-  // Boss stage: Ender Dragon
+  // Boss stage: Ender Dragon (HP 450)
   if (stage >= 10) {
-    return 150;
+    return 450;
   }
   // Stage 1-3: easy (30-50)
   // Stage 4-6: moderate (55-75)
@@ -695,7 +697,10 @@ function handleWrong() {
   updateSpecialUI();
   seWrong();
   showEffect('MISS!', 'miss');
-  damagePlayer(12);
+  var wrongDmg = 12;
+  var currentTarget = getTargetForStage(state.stage);
+  if (currentTarget.isBoss) wrongDmg = 24;
+  damagePlayer(wrongDmg);
   dom.comboNum.textContent = 0;
 
   if (state.playerHP <= 0) { handleGameOver(); return; }
@@ -801,8 +806,20 @@ function handleGameClear() {
   else if (accuracy >= 0.70) rank = 'B';
   else rank = 'C';
 
+  // Calculate clear time
+  var clearTime = (Date.now() - gameStartTime) / 1000;
+  var clearMins = Math.floor(clearTime / 60);
+  var clearSecs = (clearTime % 60).toFixed(1);
+  var clearTimeStr = clearMins > 0 ? clearMins + ':' + (clearSecs < 10 ? '0' : '') + clearSecs : clearSecs + 's';
+
+  // Save score
+  var today = new Date();
+  var dateStr = (today.getMonth() + 1) + '/' + today.getDate();
+  saveScore({ time: parseFloat(clearTime.toFixed(1)), rank: rank, date: dateStr });
+
   dom.clearStats.innerHTML =
     '<span class="clear-rank rank-' + rank + '">RANK ' + rank + '</span><br><br>' +
+    'CLEAR TIME: ' + clearTimeStr + '<br>' +
     'STAGE: ' + state.stage + '<br>' +
     (state.gameMode === 'mining' ? 'BLOCKS MINED: ' : 'ENEMIES DEFEATED: ') + state.enemiesDefeated + '<br>' +
     'CORRECT: ' + state.totalCorrect + '<br>' +
@@ -903,6 +920,54 @@ function focusInput() {
   }, 60);
 }
 
+// ===== Score History (localStorage) =====
+var SCORE_KEY = 'sotaro99_scores';
+var gameStartTime = 0;
+
+function loadScores() {
+  try {
+    var data = localStorage.getItem(SCORE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch (e) { return []; }
+}
+
+function saveScore(entry) {
+  var scores = loadScores();
+  scores.push(entry);
+  scores.sort(function(a, b) { return a.time - b.time; });
+  if (scores.length > 5) scores = scores.slice(0, 5);
+  localStorage.setItem(SCORE_KEY, JSON.stringify(scores));
+}
+
+function renderScoreHistory() {
+  var scores = loadScores();
+  if (scores.length === 0) {
+    dom.scoreHistory.innerHTML = '';
+    return;
+  }
+  var html = '<div class="score-title">BEST CLEAR TIMES</div>';
+  html += '<table class="score-table">';
+  html += '<tr><th></th><th>TIME</th><th>RANK</th><th>DATE</th></tr>';
+  for (var i = 0; i < scores.length; i++) {
+    var s = scores[i];
+    var mins = Math.floor(s.time / 60);
+    var secs = (s.time % 60).toFixed(1);
+    var timeStr = mins > 0 ? mins + ':' + (secs < 10 ? '0' : '') + secs : secs + 's';
+    html += '<tr><td>' + (i + 1) + '</td><td>' + timeStr + '</td><td class="rank-' + s.rank + '">' + s.rank + '</td><td>' + s.date + '</td></tr>';
+  }
+  html += '</table>';
+  dom.scoreHistory.innerHTML = html;
+}
+
+// ===== Return to Title =====
+function returnToTitle() {
+  state.isGameOver = true;
+  stopTimer();
+  stopBGM();
+  showScreen('start');
+  renderScoreHistory();
+}
+
 // ===== Game Init =====
 function resetState() {
   state.stage = 1;
@@ -944,6 +1009,7 @@ function startGame() {
   generateProblem();
   startTimer();
   focusInput();
+  gameStartTime = Date.now();
 }
 
 // ===== Submit =====
@@ -961,6 +1027,9 @@ function submitAnswer() {
 dom.startBtn.addEventListener('click', startGame);
 dom.retryBtn.addEventListener('click', startGame);
 dom.clearRetryBtn.addEventListener('click', startGame);
+dom.titleBtn.addEventListener('click', function() {
+  if (confirm('タイトルに戻りますか？')) returnToTitle();
+});
 dom.submitBtn.addEventListener('click', submitAnswer);
 dom.specialBtn.addEventListener('click', useSpecial);
 
@@ -1029,3 +1098,4 @@ document.addEventListener('click', unlockAudio);
 // ===== Init =====
 renderEnemy(1); // Render initial enemy immediately
 showScreen('start');
+renderScoreHistory();

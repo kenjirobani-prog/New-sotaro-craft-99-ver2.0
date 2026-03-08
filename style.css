@@ -1267,6 +1267,51 @@ body::after {
   100% { filter: brightness(1); }
 }
 
+/* --- Score History --- */
+.score-history {
+  margin-top: 12px;
+  width: 100%;
+  max-width: 320px;
+}
+.score-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: #fbbf24;
+  text-align: center;
+  margin-bottom: 6px;
+  text-shadow: 1px 1px 0 #000;
+}
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: #fff;
+  text-shadow: 1px 1px 0 #000;
+}
+.score-table th {
+  color: #9ca3af;
+  padding: 3px 4px;
+  border-bottom: 1px solid #555;
+}
+.score-table td {
+  text-align: center;
+  padding: 3px 4px;
+  border-bottom: 1px solid #333;
+}
+.score-table tr:first-child td { color: #fbbf24; }
+.score-table .rank-S { color: #fbbf24; }
+.score-table .rank-A { color: #22d3ee; }
+.score-table .rank-B { color: #4ade80; }
+.score-table .rank-C { color: #9ca3af; }
+
+/* --- Title button (return to title) --- */
+#title-btn {
+  font-size: 14px;
+  padding: 2px 6px;
+  margin-left: 4px;
+}
+
 /* --- Desktop cap --- */
 @media (min-width: 500px) {
   #game-screen, #start-screen, #gameover-screen {
