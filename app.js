@@ -65,6 +65,9 @@ const dom = {
   weaponDisplay: $('weapon-display'),
   modeBattle:    $('mode-battle'),
   modeMining:    $('mode-mining'),
+  clearScreen:   $('clear-screen'),
+  clearStats:    $('clear-stats'),
+  clearRetryBtn: $('clear-retry-btn'),
 };
 
 // ===== Weapon System =====
@@ -169,6 +172,12 @@ const MOB_TYPES = [
     item: { name: 'ネザースター', emoji: '⭐' },
     html: '<div class="enemy-head"><div class="enemy-horn"></div><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
+  {
+    minStage: 35,
+    name: 'ENDER DRAGON', cssClass: 'mob-dragon', isBoss: true,
+    item: { name: 'ドラゴンの卵', emoji: '🥚' },
+    html: '<div class="enemy-head"><div class="enemy-horn left-horn"></div><div class="enemy-horn right-horn"></div><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"><div class="dragon-wing left-wing"></div><div class="dragon-wing right-wing"></div></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div><div class="dragon-tail"></div>'
+  },
 ];
 
 // ===== Mining Targets =====
@@ -246,8 +255,11 @@ function renderEnemy(stage) {
 
 // ===== Enemy HP Calculation =====
 function getEnemyMaxHP(stage) {
-  // Stage 1: 30 HP, gradually increasing
-  // Stage 1-5: 30-60 (gentle start)
+  // Boss stage: Ender Dragon has massive HP
+  if (stage >= 35) {
+    return 500;
+  }
+  // Stage 1-5: 28-60 (gentle start)
   // Stage 6-15: 60-120 (moderate)
   // Stage 16+: 120+ (steep)
   if (stage <= 5) {
@@ -382,6 +394,28 @@ function seGameOver() {
 function seMine() {
   playNoise(0.08, 0.2);
   playTone(200, 0.05, 'square', 0.15);
+}
+function seGameClear() {
+  // Victory fanfare - triumphant ascending melody
+  playTone(523, 0.15, 'square', 0.3);
+  playTone(523, 0.15, 'square', 0.3, 0.15);
+  playTone(523, 0.15, 'square', 0.3, 0.3);
+  playTone(523, 0.3, 'square', 0.3, 0.45);
+  playTone(415, 0.3, 'square', 0.3, 0.75);
+  playTone(466, 0.3, 'square', 0.3, 1.05);
+  playTone(523, 0.2, 'square', 0.3, 1.35);
+  playTone(466, 0.15, 'square', 0.3, 1.55);
+  playTone(523, 0.6, 'square', 0.3, 1.7);
+  // Harmony
+  playTone(330, 0.15, 'triangle', 0.2, 0.45);
+  playTone(262, 0.3, 'triangle', 0.2, 0.75);
+  playTone(294, 0.3, 'triangle', 0.2, 1.05);
+  playTone(330, 0.6, 'triangle', 0.2, 1.35);
+  playTone(392, 0.6, 'triangle', 0.2, 1.7);
+  // Final shimmer
+  playTone(1047, 0.4, 'triangle', 0.15, 2.3);
+  playTone(1319, 0.4, 'triangle', 0.12, 2.4);
+  playTone(1568, 0.5, 'triangle', 0.1, 2.5);
 }
 
 // --- BGM System (Stage-adaptive RPG music) ---
@@ -688,19 +722,28 @@ function showCorrectAnswer(text) {
 
 function handleEnemyDefeated() {
   state.enemiesDefeated++;
+  var target = getTargetForStage(state.stage);
+  var isBossKill = target.isBoss;
+
   seEnemyDown();
-  var downText = state.gameMode === 'mining' ? 'MINED!' : 'ENEMY DOWN!';
-  showEffect(downText, 'down');
+  var downText = state.gameMode === 'mining' ? 'MINED!' : (isBossKill ? 'DRAGON SLAIN!!' : 'ENEMY DOWN!');
+  showEffect(downText, isBossKill ? 'boss-down' : 'down');
   dom.enemyChar.classList.add('dying');
   healPlayer(15);
 
   // Drop item
-  var target = getTargetForStage(state.stage);
   setTimeout(function() {
     seItemGet();
     addItem(target.item);
     showEffect(target.item.emoji + ' GET!', 'item-get');
   }, 500);
+
+  // Boss defeated = GAME CLEAR
+  if (isBossKill) {
+    state.isPaused = true;
+    setTimeout(function() { handleGameClear(); }, 1500);
+    return;
+  }
 
   // Weapon upgrade every 2 defeats
   var shouldUpgrade = (state.enemiesDefeated % 2 === 0) && state.weaponLevel < WEAPONS.length - 1;
@@ -728,6 +771,47 @@ function handleEnemyDefeated() {
     startTimer();
     focusInput();
   }, 1200);
+}
+
+function handleGameClear() {
+  state.isGameOver = true;
+  stopTimer();
+  stopBGM();
+  seGameClear();
+
+  // Build item summary
+  var itemSummary = '';
+  if (state.items.length > 0) {
+    var counts = {};
+    state.items.forEach(function(item) {
+      if (!counts[item.name]) counts[item.name] = { emoji: item.emoji, count: 0 };
+      counts[item.name].count++;
+    });
+    itemSummary = '<br>ITEMS: ';
+    for (var name in counts) {
+      itemSummary += counts[name].emoji + 'x' + counts[name].count + ' ';
+    }
+  }
+
+  // Calculate clear rank
+  var rank = 'S';
+  var accuracy = state.totalCorrect / Math.max(1, state.totalCorrect + state.totalWrong);
+  if (accuracy >= 0.95 && state.playerHP >= 60) rank = 'S';
+  else if (accuracy >= 0.85) rank = 'A';
+  else if (accuracy >= 0.70) rank = 'B';
+  else rank = 'C';
+
+  dom.clearStats.innerHTML =
+    '<span class="clear-rank rank-' + rank + '">RANK ' + rank + '</span><br><br>' +
+    'STAGE: ' + state.stage + '<br>' +
+    (state.gameMode === 'mining' ? 'BLOCKS MINED: ' : 'ENEMIES DEFEATED: ') + state.enemiesDefeated + '<br>' +
+    'CORRECT: ' + state.totalCorrect + '<br>' +
+    'WRONG: ' + state.totalWrong + '<br>' +
+    'HP: ' + state.playerHP + '/' + state.playerMaxHP + '<br>' +
+    'WEAPON: ' + getCurrentWeapon().emoji + ' ' + getCurrentWeapon().name +
+    itemSummary;
+
+  setTimeout(function() { showScreen('clear'); }, 1000);
 }
 
 function handleGameOver() {
@@ -801,9 +885,11 @@ function showScreen(name) {
   dom.startScreen.classList.add('hidden');
   dom.gameScreen.classList.add('hidden');
   dom.gameoverScreen.classList.add('hidden');
+  dom.clearScreen.classList.add('hidden');
   if (name === 'start')    dom.startScreen.classList.remove('hidden');
   if (name === 'game')     dom.gameScreen.classList.remove('hidden');
   if (name === 'gameover') dom.gameoverScreen.classList.remove('hidden');
+  if (name === 'clear')    dom.clearScreen.classList.remove('hidden');
 }
 
 function focusInput() {
@@ -874,6 +960,7 @@ function submitAnswer() {
 // ===== Event Listeners =====
 dom.startBtn.addEventListener('click', startGame);
 dom.retryBtn.addEventListener('click', startGame);
+dom.clearRetryBtn.addEventListener('click', startGame);
 dom.submitBtn.addEventListener('click', submitAnswer);
 dom.specialBtn.addEventListener('click', useSpecial);
 

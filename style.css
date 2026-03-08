@@ -676,6 +676,74 @@ body::after {
   border: 2px solid #1c1917; background: #44403c;
 }
 
+/* --- Ender Dragon (stage 35 - BOSS) --- */
+.mob-dragon .enemy-head {
+  width: 36px; height: 30px;
+  border: 2px solid #1e1b4b; background: #312e81;
+  box-shadow: 3px 3px 0 var(--block-shadow), 0 0 12px rgba(168,85,247,0.5);
+}
+.mob-dragon .enemy-eye { width: 7px; height: 5px; top: 10px; background: #c084fc; box-shadow: 0 0 6px #c084fc; }
+.mob-dragon .enemy-eye.left-eye { left: 4px; }
+.mob-dragon .enemy-eye.right-eye { right: 4px; }
+.mob-dragon .enemy-mouth { width: 14px; height: 3px; background: #6d28d9; bottom: 4px; }
+.mob-dragon .enemy-horn {
+  top: -10px; width: 6px; height: 12px;
+  border: 2px solid #1e1b4b; background: #4c1d95;
+}
+.mob-dragon .enemy-horn.left-horn { position: absolute; left: 2px; transform: rotate(-15deg); }
+.mob-dragon .enemy-horn.right-horn { position: absolute; right: 2px; transform: rotate(15deg); }
+.mob-dragon .enemy-body {
+  width: 40px; height: 28px;
+  border: 2px solid #1e1b4b; background: #312e81;
+  margin-top: -1px;
+  position: relative;
+  box-shadow: 2px 2px 0 var(--block-shadow), 0 0 10px rgba(168,85,247,0.4);
+}
+.dragon-wing {
+  position: absolute;
+  width: 18px; height: 22px;
+  border: 2px solid #1e1b4b;
+  background: linear-gradient(to bottom, #4c1d95, #6d28d9);
+  top: -4px;
+}
+.dragon-wing.left-wing { left: -16px; transform: rotate(10deg); border-radius: 4px 0 0 0; }
+.dragon-wing.right-wing { right: -16px; transform: rotate(-10deg); border-radius: 0 4px 0 0; }
+.mob-dragon .enemy-leg {
+  width: 10px; height: 14px;
+  border: 2px solid #1e1b4b; background: #312e81;
+}
+.dragon-tail {
+  width: 8px; height: 16px;
+  border: 2px solid #1e1b4b;
+  background: #4c1d95;
+  margin: -4px auto 0;
+  transform: rotate(5deg);
+  box-shadow: 2px 2px 0 var(--block-shadow);
+}
+/* Dragon idle animation */
+.mob-dragon {
+  animation: dragonFloat 2s ease-in-out infinite;
+}
+@keyframes dragonFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+/* Dragon wing flap */
+.mob-dragon .dragon-wing {
+  animation: wingFlap 1.2s ease-in-out infinite;
+}
+.mob-dragon .dragon-wing.right-wing {
+  animation: wingFlapR 1.2s ease-in-out infinite;
+}
+@keyframes wingFlap {
+  0%, 100% { transform: rotate(10deg); }
+  50% { transform: rotate(-5deg); }
+}
+@keyframes wingFlapR {
+  0%, 100% { transform: rotate(-10deg); }
+  50% { transform: rotate(5deg); }
+}
+
 /* =========================================
    Mining Blocks
    ========================================= */
@@ -1115,6 +1183,79 @@ body::after {
   border-color: #1e40af;
   border-top-color: #60a5fa;
 }
+
+/* --- Game Clear Screen --- */
+#clear-screen {
+  background: radial-gradient(ellipse at center, rgba(76,29,149,0.95) 0%, rgba(0,0,0,0.95) 100%);
+}
+.clear-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  background: linear-gradient(to bottom, rgba(76,29,149,0.5), rgba(0,0,0,0.7));
+  border: 4px solid #a855f7;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 0 60px rgba(168,85,247,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+  animation: clearGlow 2s ease-in-out infinite alternate;
+}
+@keyframes clearGlow {
+  from { box-shadow: 0 0 40px rgba(168,85,247,0.3), inset 0 1px 0 rgba(255,255,255,0.15); }
+  to   { box-shadow: 0 0 80px rgba(168,85,247,0.6), 0 0 120px rgba(192,132,252,0.2), inset 0 1px 0 rgba(255,255,255,0.15); }
+}
+.clear-dragon-icon {
+  font-size: 3.5rem;
+  animation: dragonSpin 3s ease-in-out infinite;
+}
+@keyframes dragonSpin {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.1) rotate(-5deg); }
+  50% { transform: scale(1.2) rotate(0deg); }
+  75% { transform: scale(1.1) rotate(5deg); }
+}
+.clear-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.8rem;
+  color: #fbbf24;
+  text-shadow: 3px 3px 0 #92400e, 0 0 30px rgba(251,191,36,0.5);
+  letter-spacing: 0.08em;
+  animation: titleShine 2s ease-in-out infinite alternate;
+}
+@keyframes titleShine {
+  from { text-shadow: 3px 3px 0 #92400e, 0 0 20px rgba(251,191,36,0.3); }
+  to   { text-shadow: 3px 3px 0 #92400e, 0 0 40px rgba(251,191,36,0.7), 0 0 60px rgba(251,191,36,0.3); }
+}
+.clear-subtitle {
+  font-family: 'DotGothic16', sans-serif;
+  color: #c084fc;
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+  text-shadow: 1px 1px 0 #1e1b4b;
+}
+.clear-btn {
+  background: linear-gradient(to bottom, #a855f7, #7c3aed, #6d28d9) !important;
+  border-color: #4c1d95 !important;
+  border-top-color: #c084fc !important;
+}
+/* Rank display */
+.clear-rank {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.8rem;
+  letter-spacing: 0.1em;
+  display: inline-block;
+}
+.rank-S { color: #fbbf24; text-shadow: 0 0 20px rgba(251,191,36,0.8); animation: rankPulse 0.8s ease infinite alternate; }
+.rank-A { color: #f87171; text-shadow: 0 0 15px rgba(248,113,113,0.6); }
+.rank-B { color: #60a5fa; text-shadow: 0 0 10px rgba(96,165,250,0.5); }
+.rank-C { color: #9ca3af; }
+@keyframes rankPulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
+}
+
+/* Boss down effect */
+.effect-text.boss-down { color: #c084fc; font-size: 2rem; }
 
 /* --- Background Flash --- */
 .bg-flash {
