@@ -131,49 +131,49 @@ const MOB_TYPES = [
     html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div>'
   },
   {
-    minStage: 3,
+    minStage: 2,
     name: 'ZOMBIE', cssClass: 'mob-zombie',
     item: { name: '腐った肉', emoji: '🥩' },
     html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-arms"><div class="enemy-arm"></div><div class="enemy-torso"></div><div class="enemy-arm"></div></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
-    minStage: 6,
+    minStage: 3,
     name: 'SKELETON', cssClass: 'mob-skeleton',
     item: { name: '骨', emoji: '🦴' },
     html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-arms"><div class="enemy-arm"></div><div class="enemy-torso"></div><div class="enemy-arm"></div></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
-    minStage: 10,
+    minStage: 4,
     name: 'SPIDER', cssClass: 'mob-spider',
     item: { name: 'クモの糸', emoji: '🕸️' },
     html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
-    minStage: 15,
+    minStage: 5,
     name: 'CREEPER', cssClass: 'mob-creeper',
     item: { name: '火薬', emoji: '💥' },
     html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
-    minStage: 20,
+    minStage: 6,
     name: 'ENDERMAN', cssClass: 'mob-enderman',
     item: { name: 'エンダーパール', emoji: '🟣' },
     html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div></div><div class="enemy-arms"><div class="enemy-arm"></div><div class="enemy-torso"></div><div class="enemy-arm"></div></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
-    minStage: 25,
+    minStage: 7,
     name: 'BLAZE', cssClass: 'mob-blaze',
     item: { name: 'ブレイズロッド', emoji: '🔥' },
     html: '<div class="enemy-head"><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
-    minStage: 30,
+    minStage: 8,
     name: 'WITHER', cssClass: 'mob-wither',
     item: { name: 'ネザースター', emoji: '⭐' },
     html: '<div class="enemy-head"><div class="enemy-horn"></div><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div>'
   },
   {
-    minStage: 35,
+    minStage: 10,
     name: 'ENDER DRAGON', cssClass: 'mob-dragon', isBoss: true,
     item: { name: 'ドラゴンの卵', emoji: '🥚' },
     html: '<div class="enemy-head"><div class="enemy-horn left-horn"></div><div class="enemy-horn right-horn"></div><div class="enemy-eye left-eye"></div><div class="enemy-eye right-eye"></div><div class="enemy-mouth"></div></div><div class="enemy-body"><div class="dragon-wing left-wing"></div><div class="dragon-wing right-wing"></div></div><div class="enemy-legs"><div class="enemy-leg"></div><div class="enemy-leg"></div></div><div class="dragon-tail"></div>'
@@ -189,43 +189,43 @@ const MINE_TYPES = [
     html: '<div class="mine-block"><div class="mine-crack"></div></div>'
   },
   {
-    minStage: 3,
+    minStage: 2,
     name: '石炭鉱石', cssClass: 'mine-coal',
     item: { name: '石炭', emoji: '⬛' },
     html: '<div class="mine-block"><div class="mine-ore"></div><div class="mine-crack"></div></div>'
   },
   {
-    minStage: 6,
+    minStage: 3,
     name: '鉄鉱石', cssClass: 'mine-iron',
     item: { name: '鉄の原石', emoji: '🔘' },
     html: '<div class="mine-block"><div class="mine-ore"></div><div class="mine-crack"></div></div>'
   },
   {
-    minStage: 10,
+    minStage: 4,
     name: '金鉱石', cssClass: 'mine-gold',
     item: { name: '金の原石', emoji: '🟡' },
     html: '<div class="mine-block"><div class="mine-ore"></div><div class="mine-crack"></div></div>'
   },
   {
-    minStage: 15,
+    minStage: 5,
     name: 'レッドストーン鉱石', cssClass: 'mine-redstone',
     item: { name: 'レッドストーン', emoji: '🔴' },
     html: '<div class="mine-block"><div class="mine-ore"></div><div class="mine-crack"></div></div>'
   },
   {
-    minStage: 20,
+    minStage: 6,
     name: 'ダイヤモンド鉱石', cssClass: 'mine-diamond',
     item: { name: 'ダイヤモンド', emoji: '💎' },
     html: '<div class="mine-block"><div class="mine-ore"></div><div class="mine-crack"></div></div>'
   },
   {
-    minStage: 25,
+    minStage: 7,
     name: 'エメラルド鉱石', cssClass: 'mine-emerald',
     item: { name: 'エメラルド', emoji: '💚' },
     html: '<div class="mine-block"><div class="mine-ore"></div><div class="mine-crack"></div></div>'
   },
   {
-    minStage: 30,
+    minStage: 8,
     name: '古代の残骸', cssClass: 'mine-netherite',
     item: { name: 'ネザライトの欠片', emoji: '🟤' },
     html: '<div class="mine-block"><div class="mine-ore"></div><div class="mine-crack"></div></div>'
@@ -255,19 +255,19 @@ function renderEnemy(stage) {
 
 // ===== Enemy HP Calculation =====
 function getEnemyMaxHP(stage) {
-  // Boss stage: Ender Dragon has massive HP
-  if (stage >= 35) {
-    return 500;
+  // Boss stage: Ender Dragon
+  if (stage >= 10) {
+    return 150;
   }
-  // Stage 1-5: 28-60 (gentle start)
-  // Stage 6-15: 60-120 (moderate)
-  // Stage 16+: 120+ (steep)
-  if (stage <= 5) {
-    return 20 + stage * 8; // 28, 36, 44, 52, 60
-  } else if (stage <= 15) {
-    return 60 + (stage - 5) * 10; // 70, 80, ..., 160
+  // Stage 1-3: easy (30-50)
+  // Stage 4-6: moderate (55-75)
+  // Stage 7-9: hard (80-120)
+  if (stage <= 3) {
+    return 20 + stage * 10; // 30, 40, 50
+  } else if (stage <= 6) {
+    return 45 + (stage - 3) * 10; // 55, 65, 75
   } else {
-    return 160 + (stage - 15) * 15; // 175, 190, ...
+    return 75 + (stage - 6) * 15; // 90, 105, 120
   }
 }
 
@@ -502,9 +502,9 @@ var bgmTiers = [bgmTier0, bgmTier1, bgmTier2, bgmTier3];
 
 function getBGMTier() {
   var s = state.stage;
-  if (s >= 25) return 3;
-  if (s >= 15) return 2;
-  if (s >= 6)  return 1;
+  if (s >= 8)  return 3;
+  if (s >= 5)  return 2;
+  if (s >= 3)  return 1;
   return 0;
 }
 
@@ -561,7 +561,7 @@ var timerInterval = null;
 var TIMER_TICK = 100;
 
 function getTimeLimitForStage() {
-  var reduction = Math.floor(state.enemiesDefeated / 5);
+  var reduction = Math.floor(state.enemiesDefeated / 3);
   return Math.max(5, 15 - reduction);
 }
 
